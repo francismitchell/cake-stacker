@@ -19,7 +19,10 @@ func _on_input_event(_viewport: Node, event: InputEvent, _shape_idx: int) -> voi
 	if event is InputEventMouseButton:
 		if event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 			is_dragging = true
+			# ensure dragged card is always at the top of the canvas
+			z_index = 99
 			# store mouse position offset so that cards drag from selected pixel
 			mouse_position_offset = get_global_mouse_position() - global_position
 		elif event.is_released() and event.button_index == MOUSE_BUTTON_LEFT:
 			is_dragging = false
+			z_index = 0
