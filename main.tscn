@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://brsg2r71m8o3f"]
+
+[node name="Main" type="Control" unique_id=1340163516]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Background" type="ColorRect" parent="." unique_id=1816267600]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.98039216, 0.9490196, 0.88235295, 1)
