@@ -1,5 +1,5 @@
 @tool
-class_name IngredientCard
+class_name Card
 extends Area2D
 
 @export var card_data: CardData:
@@ -17,6 +17,8 @@ extends Area2D
 var is_dragging: bool = false
 var mouse_position_offset: Vector2 = Vector2.ZERO
 var cards_in_area: Array = []
+var next_card_up_stack: Card = null
+var card_stack: CardStack = null
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -50,11 +52,28 @@ func _on_input_event(_viewport: Node, event: InputEvent, _shape_idx: int) -> voi
 			z_index = 0
 			# check if dropped on a card or stack
 			if not cards_in_area.is_empty():
-				# card DROPPED onto another card, therefore this card should be in front of it
-				z_index = cards_in_area.front().z_index + 1
-				# for now, align with position offset slightly
-				var target_position: Vector2 = cards_in_area.front().global_position + Vector2(0.0, 32.0)
+				# for now, take the LAST card in the list, i.e. the most recently hovered card
+				var card_in_stack_to_join: Card = cards_in_area.back()
+				# query this card for which card stack it belongs to
+				if card_in_stack_to_join.card_stack:
+					# card already in a stack, so join it
+					card_in_stack_to_join.card_stack.join_stack(self)
+				else:
+					# card not in a stack, so create a new one
+					card_in_stack_to_join.card_stack = CardStack.new()
+					# add the card and self to the new stack
+					card_in_stack_to_join.card_stack.join_stack(card_in_stack_to_join)
+					card_in_stack_to_join.card_stack.join_stack(self)
+				card_stack = card_in_stack_to_join.card_stack
+				z_index = card_stack.get_next_z_index()
+				var target_position: Vector2 = card_stack.get_next_global_position()
 				create_tween().tween_property(self, "global_position", target_position, 0.25).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+			else:
+				# not dropped onto a stack
+				if card_stack:
+					card_stack.leave_stack(self)
+					card_stack = null
+
 
 
 func _on_area_entered(area: Area2D) -> void:
