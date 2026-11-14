@@ -1,0 +1,26 @@
+[gd_scene format=3 uid="uid://bc3fqoc4p5pxw"]
+
+[ext_resource type="PackedScene" uid="uid://bcxuomucc1wt7" path="res://cards/card_control.tscn" id="1_kikvd"]
+[ext_resource type="Script" uid="uid://ccowodygcw3ba" path="res://cards/card.gd" id="1_nwofj"]
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_vf1vs"]
+viewport_path = NodePath("SubViewport")
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_vf1vs"]
+size = Vector2(128, 192)
+
+[node name="Card" type="Area2D" unique_id=484967368]
+script = ExtResource("1_nwofj")
+
+[node name="SubViewport" type="SubViewport" parent="." unique_id=39141999]
+size = Vector2i(128, 192)
+
+[node name="PanelContainer" parent="SubViewport" unique_id=1840125192 instance=ExtResource("1_kikvd")]
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1874383692]
+texture = SubResource("ViewportTexture_vf1vs")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=291844586]
+shape = SubResource("RectangleShape2D_vf1vs")
+
+[connection signal="input_event" from="." to="." method="_on_input_event"]
