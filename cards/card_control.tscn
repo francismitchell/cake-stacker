@@ -1,19 +1,22 @@
 [gd_scene format=3 uid="uid://bcxuomucc1wt7"]
 
-[ext_resource type="Texture2D" uid="uid://c6x13ivn88pya" path="res://icon.svg" id="1_6fs7m"]
+[ext_resource type="Texture2D" uid="uid://dx44xqfpfufdc" path="res://egg test.png" id="1_yd2ms"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_6fs7m"]
 font_size = 24
 
-[node name="PanelContainer" type="PanelContainer" unique_id=1840125192]
+[node name="PanelContainer" type="TextureRect" unique_id=1774524795]
 custom_minimum_size = Vector2(128, 192)
 custom_maximum_size = Vector2(128, 192)
-offset_right = 64.0
-offset_bottom = 96.0
+offset_right = 128.0
+offset_bottom = 192.0
+texture = ExtResource("1_yd2ms")
 
 [node name="MarginContainer" type="MarginContainer" parent="." unique_id=1855553077]
 clip_contents = true
-layout_mode = 2
+layout_mode = 0
+offset_right = 128.0
+offset_bottom = 192.0
 theme_override_constants/margin_left = 4
 theme_override_constants/margin_top = 4
 theme_override_constants/margin_right = 4
@@ -29,5 +32,7 @@ label_settings = SubResource("LabelSettings_6fs7m")
 horizontal_alignment = 1
 
 [node name="TextureRect" type="TextureRect" parent="MarginContainer/VBoxContainer" unique_id=1899394081]
+visible = false
 layout_mode = 2
-texture = ExtResource("1_6fs7m")
+texture = ExtResource("1_yd2ms")
+stretch_mode = 4

@@ -2,7 +2,12 @@
 
 [ext_resource type="PackedScene" uid="uid://bcxuomucc1wt7" path="res://cards/card_control.tscn" id="1_kikvd"]
 [ext_resource type="Script" uid="uid://ccowodygcw3ba" path="res://cards/card.gd" id="1_nwofj"]
-[ext_resource type="Texture2D" uid="uid://xfd0sitt5rcb" path="res://cake.png" id="4_f61jr"]
+[ext_resource type="Script" uid="uid://csbqe0bi83708" path="res://ingredient_data.gd" id="2_4k7q8"]
+
+[sub_resource type="Resource" id="Resource_h2yge"]
+script = ExtResource("2_4k7q8")
+ingredient_type = 3
+metadata/_custom_type_script = "uid://csbqe0bi83708"
 
 [sub_resource type="ViewportTexture" id="ViewportTexture_vf1vs"]
 viewport_path = NodePath("SubViewport")
@@ -10,25 +15,44 @@ viewport_path = NodePath("SubViewport")
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_vf1vs"]
 size = Vector2(128, 192)
 
+[sub_resource type="LabelSettings" id="LabelSettings_4k7q8"]
+font_color = Color(0.30161053, 0.5553811, 0, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_f61jr"]
+font_color = Color(0.87203085, 0, 0.4091008, 1)
+
 [node name="Card" type="Area2D" unique_id=484967368]
 script = ExtResource("1_nwofj")
+card_data = SubResource("Resource_h2yge")
 
 [node name="SubViewport" type="SubViewport" parent="." unique_id=39141999]
 size = Vector2i(128, 192)
 
 [node name="PanelContainer" parent="SubViewport" unique_id=1840125192 instance=ExtResource("1_kikvd")]
 
-[node name="Label" parent="SubViewport/PanelContainer/MarginContainer/VBoxContainer" parent_id_path=PackedInt32Array(1840125192, 2085091651) index="0" unique_id=940296338]
-text = "Flour"
-
-[node name="TextureRect" parent="SubViewport/PanelContainer/MarginContainer/VBoxContainer" parent_id_path=PackedInt32Array(1840125192, 2085091651) index="1" unique_id=1899394081]
-texture = ExtResource("4_f61jr")
-
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1874383692]
 texture = SubResource("ViewportTexture_vf1vs")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=291844586]
 shape = SubResource("RectangleShape2D_vf1vs")
+
+[node name="CardAboveLabel" type="Label" parent="." unique_id=1363737371]
+visible = false
+offset_left = 75.0
+offset_top = -93.0
+offset_right = 161.0
+offset_bottom = -70.0
+text = "card above"
+label_settings = SubResource("LabelSettings_4k7q8")
+
+[node name="CardBelowLabel" type="Label" parent="." unique_id=28294972]
+visible = false
+offset_left = 78.0
+offset_top = 67.0
+offset_right = 164.0
+offset_bottom = 90.0
+text = "card below"
+label_settings = SubResource("LabelSettings_f61jr")
 
 [connection signal="area_entered" from="." to="." method="_on_area_entered"]
 [connection signal="area_exited" from="." to="." method="_on_area_exited"]
