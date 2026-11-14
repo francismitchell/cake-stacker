@@ -1,3 +1,4 @@
+@tool
 class_name IngredientData
 extends CardData
 
@@ -18,10 +19,13 @@ static var ingredient_texture_dict: Dictionary[IngredientType, Texture2D] = {
 	IngredientType.BUTTER: preload("res://icon.svg"),
 	IngredientType.SUGAR: preload("res://icon.svg"),
 	IngredientType.EGG: preload("res://icon.svg"),
-	IngredientType.FLOUR: preload("res://icon.svg"),
+	IngredientType.FLOUR: preload("res://cake.png"),
 	IngredientType.STRAWBERRY: preload("res://icon.svg"),
 	IngredientType.JAM: preload("res://icon.svg")
 }
-@export var ingredient_type: IngredientType = IngredientType.NONE
+@export var ingredient_type: IngredientType = IngredientType.NONE:
+	set(value):
+		ingredient_type = value
+		emit_changed()
 var ingredient_quality: IngredientQuality = IngredientQuality.NONE
 var ingredient_sell_price: int = 0
