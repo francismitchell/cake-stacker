@@ -1,13 +1,12 @@
 extends Node
 
-const RECIPES_DIR: String = "res://recipes/"
+const RECIPES_DIR: String = "res://recipes/data/"
 
 var recipes: Array[RecipeData]
 
 func _ready() -> void:
 	var recipe_resources: PackedStringArray = ResourceLoader.list_directory(RECIPES_DIR)
 	for recipe_res: String in recipe_resources:
-		if not recipe_res.right(5) == ".tres": continue
 		print("Loading recipe ", recipe_res)
 		recipes.push_back(load(RECIPES_DIR + recipe_res))
 
@@ -18,4 +17,4 @@ func process_ingredients(ingredients_in: Dictionary[IngredientData.IngredientTyp
 		if recipe.ingredients_in == ingredients_in:
 			return recipe.ingredient_out
 	# if no recipe found, return failed recipe card
-	return IngredientData.IngredientType.NONE
+	return IngredientData.IngredientType.FAILED_RECIPE
