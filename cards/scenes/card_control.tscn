@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://bcxuomucc1wt7"]
 
 [ext_resource type="Texture2D" uid="uid://dx44xqfpfufdc" path="res://cards/images/egg.png" id="1_yd2ms"]
+[ext_resource type="Texture2D" uid="uid://bginowa2m1jf0" path="res://cards/images/stars/gold.png" id="2_6ius8"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_6fs7m"]
 font_size = 24
@@ -24,17 +25,18 @@ theme_override_constants/margin_top = 4
 theme_override_constants/margin_right = 4
 theme_override_constants/margin_bottom = 4
 
-[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer" unique_id=2085091651]
+[node name="Label" type="Label" parent="MarginContainer" unique_id=940296338]
 layout_mode = 2
-
-[node name="Label" type="Label" parent="MarginContainer/VBoxContainer" unique_id=940296338]
-layout_mode = 2
+size_flags_vertical = 8
 text = "Egg"
 label_settings = SubResource("LabelSettings_6fs7m")
 horizontal_alignment = 1
 
-[node name="TextureRect" type="TextureRect" parent="MarginContainer/VBoxContainer" unique_id=1899394081]
-visible = false
-layout_mode = 2
-texture = ExtResource("1_yd2ms")
-stretch_mode = 4
+[node name="StarTextureRect" type="TextureRect" parent="." unique_id=199278251]
+layout_mode = 0
+offset_left = 77.0
+offset_top = 6.0
+offset_right = 177.0
+offset_bottom = 106.0
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("2_6ius8")

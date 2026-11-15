@@ -4,6 +4,7 @@ extends Area2D
 
 const CARD_SCENE = preload("res://cards/scenes/card.tscn")
 const PROCESS_TIME: float = 2.0
+const MAX_AUTO_STACK_SIZE: int = 12
 
 @export var card_data: CardData:
 	set(value):
@@ -13,8 +14,9 @@ const PROCESS_TIME: float = 2.0
 		if card_data:
 			card_data.changed.connect(initialise_card_visuals)
 		initialise_card_visuals()
-@onready var card_label: Label = $SubViewport/PanelContainer/MarginContainer/VBoxContainer/Label
+@onready var card_label: Label = $SubViewport/PanelContainer/MarginContainer/Label
 @onready var card_texture: TextureRect = $SubViewport/PanelContainer
+@onready var card_quality_texture: TextureRect = $SubViewport/PanelContainer/StarTextureRect
 
 var is_dragging: bool = false:
 	set(value):
@@ -69,9 +71,11 @@ func initialise_card_visuals() -> void:
 		card_data.card_name = IngredientData.ingredient_name_dict[card_data.ingredient_type]
 		card_label.text = card_data.card_name
 		card_texture.texture = IngredientData.ingredient_texture_dict[card_data.ingredient_type]
+		card_quality_texture.texture = IngredientData.ingredient_quality_texture_dict[card_data.ingredient_quality]
 	if card_data.card_type == CardData.CardType.BAKER:
 		card_label.text = "Baker"
 		card_texture.texture = preload("res://icon.svg")
+		card_quality_texture.texture = null
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -209,11 +213,16 @@ func baker_create_ingredient(_loop_count: int) -> void:
 	if auto_stack_card:
 		var child_cards: Array[Card] = auto_stack_card.get_child_cards()
 		if child_cards:
+			if child_cards.size() + 1 >= MAX_AUTO_STACK_SIZE:
+				baker_progress_bar_tween.kill()
+				$BakerProgressBar.hide()
+				return
 			target_position = child_cards.back().global_position + Vector2(0.0, 32.0)
 			# TODO fix this horrible pattern of having to set both cards
 			# make it so that we only do it once, e.g. a single join_cards function
 			new_card.card_above = child_cards.back()
 			child_cards.back().card_below = new_card
+			new_card.z_index = new_card.card_above.z_index + 1
 		else:
 			target_position = auto_stack_card.global_position + Vector2(0.0, 32.0)
 			new_card.card_above = auto_stack_card
