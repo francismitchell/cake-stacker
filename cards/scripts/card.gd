@@ -189,8 +189,9 @@ func baker_process_ingredients() -> void:
 	new_ingredient_data.ingredient_type = RecipeManager.process_ingredients(ingredients_in)
 	var new_card: Card = CARD_SCENE.instantiate()
 	new_card.card_data = new_ingredient_data
-	new_card.global_position = card_above.global_position
-	create_tween().tween_property(new_card, "global_position", new_card.global_position + Vector2(randf_range(-128.0, 128.0),randf_range(-128.0, 128.0)), 0.5).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	new_card.global_position = global_position
+	var target_position = global_position + Vector2(0.0, 196.0).rotated(randf() * TAU)
+	create_tween().tween_property(new_card, "global_position", target_position, 0.5).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 	get_parent().add_child(new_card)
 	for card: Card in cards_above:
 		card.queue_free()
@@ -201,17 +202,18 @@ func baker_create_ingredient(_loop_count: int) -> void:
 	new_ingredient_data.ingredient_type = card_above.card_data.ingredient_type
 	var new_card: Card = CARD_SCENE.instantiate()
 	new_card.card_data = new_ingredient_data
-	new_card.global_position = card_above.global_position
-	var target_position = new_card.global_position + Vector2(0.0, 128.0).rotated(randf() * TAU)
+	new_card.global_position = global_position
+	var target_position = global_position + Vector2(0.0, 196.0).rotated(randf() * TAU)
 	# IMPORTANT: only ingredient source cards have an auto stack area, so we must query it
 	var auto_stack_card: Card = card_above.get_auto_stack_card(new_card)
 	if auto_stack_card:
 		var child_cards: Array[Card] = auto_stack_card.get_child_cards()
 		if child_cards:
 			target_position = child_cards.back().global_position + Vector2(0.0, 32.0)
+			# TODO fix this horrible pattern of having to set both cards
+			# make it so that we only do it once, e.g. a single join_cards function
 			new_card.card_above = child_cards.back()
 			child_cards.back().card_below = new_card
-			print(child_cards.back())
 		else:
 			target_position = auto_stack_card.global_position + Vector2(0.0, 32.0)
 			new_card.card_above = auto_stack_card
@@ -220,14 +222,14 @@ func baker_create_ingredient(_loop_count: int) -> void:
 	get_parent().add_child(new_card)
 
 
-func _on_auto_stack_area_2d_area_entered(area: Variant) -> void:
+func _on_auto_stack_area_2d_area_entered(area: Area2D) -> void:
 	if area is not Card: return
-	# only add cards at the top of their stack
-	if area.card_data.card_type == CardData.CardType.INGREDIENT and area.card_above == null:
+	# only add ingredient cards
+	if area.card_data.card_type == CardData.CardType.INGREDIENT:
 		cards_in_auto_stack_area.push_back(area)
 
 
-func _on_auto_stack_area_2d_area_exited(area: Variant) -> void:
+func _on_auto_stack_area_2d_area_exited(area: Area2D) -> void:
 	if area is not Card: return
 	if cards_in_auto_stack_area.has(area):
 		cards_in_auto_stack_area.erase(area)
@@ -236,11 +238,14 @@ func _on_auto_stack_area_2d_area_exited(area: Variant) -> void:
 func get_auto_stack_card(card: Card) -> Card:
 	for auto_stack_card: Card in cards_in_auto_stack_area:
 		var is_auto_stackable: bool = true
+		# reject cards not at the top of the stack
+		if card_above != null: continue
+		# reject top of stack cards of different ingredient types
 		if auto_stack_card.card_data.ingredient_type != card.card_data.ingredient_type: continue
 		var child_cards: Array[Card] = auto_stack_card.get_child_cards()
 		for child_card: Card in child_cards:
-			if child_card.card_data.ingredient_type != auto_stack_card.card_data.ingredient_type:
-				# differing card type, so we can't auto stack
+			if child_card.card_data.card_type != card_data.CardType.INGREDIENT or child_card.card_data.ingredient_type != auto_stack_card.card_data.ingredient_type:
+				# reject top of stack cards where a child has a different ingredient type
 				is_auto_stackable = false
 				break
 		if is_auto_stackable:
