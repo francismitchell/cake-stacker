@@ -1,10 +1,8 @@
 [gd_scene format=3 uid="uid://bx4u2cw1eei6b"]
 
 [ext_resource type="Script" uid="uid://bar2fdcmjjrx4" path="res://ui/scripts/shop.gd" id="1_2v8nf"]
-[ext_resource type="Texture2D" uid="uid://bsd4x6wunutrm" path="res://cards/images/muck.jpg" id="1_foe6g"]
-[ext_resource type="Texture2D" uid="uid://ddr7a7u00disw" path="res://cards/images/Holo muck cake.jpg" id="3_e4u7y"]
-[ext_resource type="Texture2D" uid="uid://c4jty2uqxc34v" path="res://cards/images/cake.jpg" id="4_t603m"]
-[ext_resource type="Script" uid="uid://hkb50kdyk0al" path="res://ui/scripts/buy_source_card_button.gd" id="5_t603m"]
+[ext_resource type="PackedScene" uid="uid://bc3fqoc4p5pxw" path="res://cards/scenes/card.tscn" id="2_1slnd"]
+[ext_resource type="PackedScene" uid="uid://b0srap7gslasg" path="res://ui/buy_source_card_button.tscn" id="2_2v8nf"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_vf1vs"]
 font_size = 64
@@ -16,6 +14,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
 script = ExtResource("1_2v8nf")
 
 [node name="MarginContainer" type="MarginContainer" parent="." unique_id=867310292]
@@ -25,10 +24,10 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/margin_left = 196
-theme_override_constants/margin_top = 128
-theme_override_constants/margin_right = 196
-theme_override_constants/margin_bottom = 128
+theme_override_constants/margin_left = 392
+theme_override_constants/margin_top = 256
+theme_override_constants/margin_right = 392
+theme_override_constants/margin_bottom = 256
 
 [node name="PanelContainer" type="PanelContainer" parent="MarginContainer" unique_id=1850597657]
 layout_mode = 2
@@ -56,108 +55,26 @@ layout_mode = 2
 theme_override_constants/separation = 64
 alignment = 1
 
-[node name="BuySourceCardButton" type="TextureButton" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer" unique_id=349518467]
-custom_maximum_size = Vector2(128, 196)
+[node name="Card" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer" unique_id=484967368 instance=ExtResource("2_1slnd")]
+
+[node name="BuySourceCardButton" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer" unique_id=1797213622 instance=ExtResource("2_2v8nf")]
 layout_mode = 2
-texture_normal = ExtResource("1_foe6g")
-texture_pressed = ExtResource("3_e4u7y")
-texture_hover = ExtResource("4_t603m")
-stretch_mode = 0
-script = ExtResource("5_t603m")
+
+[node name="BuySourceCardButton2" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer" unique_id=503572249 instance=ExtResource("2_2v8nf")]
+layout_mode = 2
 ingredient_type = 6
 
-[node name="TextureButton2" type="TextureButton" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer" unique_id=1395836054]
-custom_maximum_size = Vector2(128, 196)
+[node name="BuySourceCardButton3" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer" unique_id=1832502376 instance=ExtResource("2_2v8nf")]
 layout_mode = 2
-texture_normal = ExtResource("1_foe6g")
-texture_pressed = ExtResource("3_e4u7y")
-texture_hover = ExtResource("4_t603m")
-stretch_mode = 0
+ingredient_type = 14
 
-[node name="TextureButton3" type="TextureButton" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer" unique_id=2101962258]
-custom_maximum_size = Vector2(128, 196)
+[node name="BuySourceCardButton4" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer" unique_id=1486965016 instance=ExtResource("2_2v8nf")]
 layout_mode = 2
-texture_normal = ExtResource("1_foe6g")
-texture_pressed = ExtResource("3_e4u7y")
-texture_hover = ExtResource("4_t603m")
-stretch_mode = 0
+ingredient_type = 15
 
-[node name="TextureButton4" type="TextureButton" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer" unique_id=469284527]
-custom_maximum_size = Vector2(128, 196)
+[node name="BuySourceCardButton5" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer" unique_id=3655812 instance=ExtResource("2_2v8nf")]
 layout_mode = 2
-texture_normal = ExtResource("1_foe6g")
-texture_pressed = ExtResource("3_e4u7y")
-texture_hover = ExtResource("4_t603m")
-stretch_mode = 0
-
-[node name="TextureButton5" type="TextureButton" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer" unique_id=264013136]
-custom_maximum_size = Vector2(128, 196)
-layout_mode = 2
-texture_normal = ExtResource("1_foe6g")
-texture_pressed = ExtResource("3_e4u7y")
-texture_hover = ExtResource("4_t603m")
-stretch_mode = 0
-
-[node name="TextureButton6" type="TextureButton" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer" unique_id=24798711]
-custom_maximum_size = Vector2(128, 196)
-layout_mode = 2
-texture_normal = ExtResource("1_foe6g")
-texture_pressed = ExtResource("3_e4u7y")
-texture_hover = ExtResource("4_t603m")
-stretch_mode = 0
-
-[node name="HBoxContainer2" type="HBoxContainer" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer" unique_id=1800470501]
-layout_mode = 2
-theme_override_constants/separation = 64
-alignment = 1
-
-[node name="TextureButton" type="TextureButton" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer2" unique_id=1503675277]
-custom_maximum_size = Vector2(128, 196)
-layout_mode = 2
-texture_normal = ExtResource("1_foe6g")
-texture_pressed = ExtResource("3_e4u7y")
-texture_hover = ExtResource("4_t603m")
-stretch_mode = 0
-
-[node name="TextureButton2" type="TextureButton" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer2" unique_id=480320546]
-custom_maximum_size = Vector2(128, 196)
-layout_mode = 2
-texture_normal = ExtResource("1_foe6g")
-texture_pressed = ExtResource("3_e4u7y")
-texture_hover = ExtResource("4_t603m")
-stretch_mode = 0
-
-[node name="TextureButton3" type="TextureButton" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer2" unique_id=244739018]
-custom_maximum_size = Vector2(128, 196)
-layout_mode = 2
-texture_normal = ExtResource("1_foe6g")
-texture_pressed = ExtResource("3_e4u7y")
-texture_hover = ExtResource("4_t603m")
-stretch_mode = 0
-
-[node name="TextureButton4" type="TextureButton" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer2" unique_id=1527228171]
-custom_maximum_size = Vector2(128, 196)
-layout_mode = 2
-texture_normal = ExtResource("1_foe6g")
-texture_pressed = ExtResource("3_e4u7y")
-texture_hover = ExtResource("4_t603m")
-stretch_mode = 0
-
-[node name="TextureButton5" type="TextureButton" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer2" unique_id=778571339]
-custom_maximum_size = Vector2(128, 196)
-layout_mode = 2
-texture_normal = ExtResource("1_foe6g")
-texture_pressed = ExtResource("3_e4u7y")
-texture_hover = ExtResource("4_t603m")
-stretch_mode = 0
-
-[node name="TextureButton6" type="TextureButton" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer2" unique_id=1884608988]
-custom_maximum_size = Vector2(128, 196)
-layout_mode = 2
-texture_normal = ExtResource("1_foe6g")
-texture_pressed = ExtResource("3_e4u7y")
-texture_hover = ExtResource("4_t603m")
-stretch_mode = 0
+ingredient_type = 16
 
 [node name="CloseButton" type="Button" parent="MarginContainer/PanelContainer/MarginContainer" unique_id=916830427]
 layout_mode = 2
@@ -165,5 +82,4 @@ size_flags_horizontal = 8
 size_flags_vertical = 0
 text = "CLOSE"
 
-[connection signal="pressed" from="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/BuySourceCardButton" to="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/BuySourceCardButton" method="_on_pressed"]
 [connection signal="pressed" from="MarginContainer/PanelContainer/MarginContainer/CloseButton" to="." method="_on_close_button_pressed"]

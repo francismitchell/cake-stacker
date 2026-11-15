@@ -1,11 +1,20 @@
+@tool
 extends TextureButton
 
-@export var ingredient_type: IngredientData.IngredientType
+@onready var label: Label = $Label
+@export var ingredient_type: IngredientData.IngredientType:
+	set(value):
+		ingredient_type = value
+		_update_label()
+
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	pass # Replace with function body.
+	_update_label()
 
+func _update_label() -> void:
+	if label:
+		label.text = IngredientData.ingredient_name_dict[ingredient_type]
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:

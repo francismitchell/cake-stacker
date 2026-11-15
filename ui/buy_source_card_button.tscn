@@ -1,0 +1,38 @@
+[gd_scene format=3 uid="uid://b0srap7gslasg"]
+
+[ext_resource type="Texture2D" uid="uid://m53mdgbpa5jx" path="res://cards/images/shop.jpg" id="1_5goaq"]
+[ext_resource type="Texture2D" uid="uid://dnwj0gaivwbri" path="res://cards/images/egg_source.jpg" id="2_xano3"]
+[ext_resource type="Texture2D" uid="uid://ddr7a7u00disw" path="res://cards/images/Holo muck cake.jpg" id="3_i0gru"]
+[ext_resource type="Script" uid="uid://hkb50kdyk0al" path="res://ui/scripts/buy_source_card_button.gd" id="4_6ix5o"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_qxnrq"]
+font_size = 24
+outline_size = 8
+outline_color = Color(0, 0, 0, 1)
+
+[node name="BuySourceCardButton" type="TextureButton" unique_id=1797213622]
+custom_maximum_size = Vector2(128, 196)
+texture_normal = ExtResource("1_5goaq")
+texture_pressed = ExtResource("2_xano3")
+texture_hover = ExtResource("3_i0gru")
+stretch_mode = 0
+script = ExtResource("4_6ix5o")
+ingredient_type = 2
+
+[node name="Label" type="Label" parent="." unique_id=1325908087]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -28.0
+offset_top = -17.0
+offset_right = 28.0
+offset_bottom = 17.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "Butter"
+label_settings = SubResource("LabelSettings_qxnrq")
+
+[connection signal="pressed" from="." to="." method="_on_pressed"]
