@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://dwos73agc62pa"
-path="res://.godot/imported/cake.png-1f2cd357efd9ef65e107c2a70f3710db.ctex"
+path="res://.godot/imported/cake.png-ff1732ee1299e577e313691eb98c929e.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://cake.png"
-dest_files=["res://.godot/imported/cake.png-1f2cd357efd9ef65e107c2a70f3710db.ctex"]
+source_file="res://cards/images/cake.png"
+dest_files=["res://.godot/imported/cake.png-ff1732ee1299e577e313691eb98c929e.ctex"]
 
 [params]
 

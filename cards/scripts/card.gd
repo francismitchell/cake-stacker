@@ -2,7 +2,8 @@
 class_name Card
 extends Area2D
 
-const CARD_SCENE = preload("res://cards/card.tscn")
+const CARD_SCENE = preload("res://cards/scenes/card.tscn")
+const PROCESS_TIME: float = 2.0
 
 @export var card_data: CardData:
 	set(value):
@@ -15,7 +16,13 @@ const CARD_SCENE = preload("res://cards/card.tscn")
 @onready var card_label: Label = $SubViewport/PanelContainer/MarginContainer/VBoxContainer/Label
 @onready var card_texture: TextureRect = $SubViewport/PanelContainer
 
-var is_dragging: bool = false
+var is_dragging: bool = false:
+	set(value):
+		is_dragging = value
+		if is_dragging and card_data.card_type == CardData.CardType.BAKER:
+			if baker_progress_bar_tween:
+				baker_progress_bar_tween.kill()
+			$BakerProgressBar.hide()
 var mouse_position_offset: Vector2 = Vector2.ZERO
 var cards_in_area: Array = []
 var card_above: Card = null:
@@ -25,28 +32,20 @@ var card_above: Card = null:
 		if card_above:
 			if last_card_above and card_above != last_card_above:
 				last_card_above.card_below = null
-		if card_above and card_data.card_type == CardData.CardType.BAKER:
+		if card_above and card_above.card_data.card_type == CardData.CardType.INGREDIENT and card_data.card_type == CardData.CardType.BAKER:
 			# start cooking
-			var ingredients_in: Dictionary[IngredientData.IngredientType, int] = {}
-			var card_above_this = card_above
-			var cards_above: Array[Card]
-			while card_above_this:
-				cards_above.push_back(card_above_this)
-				if ingredients_in.has(card_above_this.card_data.ingredient_type):
-					ingredients_in[card_above_this.card_data.ingredient_type] += 1
-				else:
-					ingredients_in[card_above_this.card_data.ingredient_type] = 1
-				card_above_this = card_above_this.card_above
-			var new_ingredient_data = IngredientData.new()
-			new_ingredient_data.ingredient_type = RecipeManager.process_ingredients(ingredients_in)
-			var new_card: Card = CARD_SCENE.instantiate()
-			new_card.card_data = new_ingredient_data
-			new_card.global_position = card_above.global_position
-			create_tween().tween_property(new_card, "global_position", new_card.global_position + Vector2(randf_range(-128.0, 128.0),randf_range(-128.0, 128.0)), 0.5).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-			get_parent().add_child(new_card)
-			for card: Card in cards_above:
-				card.queue_free()
-				
+			$BakerProgressBar.show()
+			baker_progress_bar_tween = create_tween()
+			baker_progress_bar_tween.tween_property($BakerProgressBar, "value", 100.0, PROCESS_TIME).from(0.0)
+			baker_progress_bar_tween.finished.connect(baker_process_ingredients)
+			baker_progress_bar_tween.finished.connect($BakerProgressBar.hide)
+		elif card_above and card_above.card_data.card_type == CardData.CardType.INGREDIENT_SOURCE and card_data.card_type == CardData.CardType.BAKER:
+			# start producing new ingredient
+			$BakerProgressBar.show()
+			baker_progress_bar_tween = create_tween()
+			baker_progress_bar_tween.set_loops()
+			baker_progress_bar_tween.tween_property($BakerProgressBar, "value", 100.0, PROCESS_TIME).from(0.0)
+			baker_progress_bar_tween.loop_finished.connect(baker_create_ingredient)
 var card_below: Card = null:
 	set(value):
 		var last_card_below = card_below
@@ -55,6 +54,8 @@ var card_below: Card = null:
 			if last_card_below and card_below != last_card_below:
 				last_card_below.card_below = null
 var child_cards_to_move: Array[Card] = []
+var baker_progress_bar_tween: Tween = null
+var cards_in_auto_stack_area: Array[Card] = []
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -162,6 +163,7 @@ func _on_area_exited(area: Area2D) -> void:
 	if cards_in_area.has(area):
 		cards_in_area.erase(area)
 
+
 func get_child_cards() -> Array[Card]:
 	var child_cards: Array[Card] = []
 	var card_below_this: Card = card_below
@@ -169,4 +171,78 @@ func get_child_cards() -> Array[Card]:
 	while card_below_this:
 		child_cards.push_back(card_below_this) 
 		card_below_this = card_below_this.card_below
-	return child_cards
+	return child_cards	
+
+
+func baker_process_ingredients() -> void:
+	var ingredients_in: Dictionary[IngredientData.IngredientType, int] = {}
+	var card_above_this = card_above
+	var cards_above: Array[Card]
+	while card_above_this:
+		cards_above.push_back(card_above_this)
+		if ingredients_in.has(card_above_this.card_data.ingredient_type):
+			ingredients_in[card_above_this.card_data.ingredient_type] += 1
+		else:
+			ingredients_in[card_above_this.card_data.ingredient_type] = 1
+		card_above_this = card_above_this.card_above
+	var new_ingredient_data = IngredientData.new()
+	new_ingredient_data.ingredient_type = RecipeManager.process_ingredients(ingredients_in)
+	var new_card: Card = CARD_SCENE.instantiate()
+	new_card.card_data = new_ingredient_data
+	new_card.global_position = card_above.global_position
+	create_tween().tween_property(new_card, "global_position", new_card.global_position + Vector2(randf_range(-128.0, 128.0),randf_range(-128.0, 128.0)), 0.5).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	get_parent().add_child(new_card)
+	for card: Card in cards_above:
+		card.queue_free()
+
+
+func baker_create_ingredient(_loop_count: int) -> void:
+	var new_ingredient_data = IngredientData.new()
+	new_ingredient_data.ingredient_type = card_above.card_data.ingredient_type
+	var new_card: Card = CARD_SCENE.instantiate()
+	new_card.card_data = new_ingredient_data
+	new_card.global_position = card_above.global_position
+	var target_position = new_card.global_position + Vector2(0.0, 128.0).rotated(randf() * TAU)
+	# IMPORTANT: only ingredient source cards have an auto stack area, so we must query it
+	var auto_stack_card: Card = card_above.get_auto_stack_card(new_card)
+	if auto_stack_card:
+		var child_cards: Array[Card] = auto_stack_card.get_child_cards()
+		if child_cards:
+			target_position = child_cards.back().global_position + Vector2(0.0, 32.0)
+			new_card.card_above = child_cards.back()
+			child_cards.back().card_below = new_card
+			print(child_cards.back())
+		else:
+			target_position = auto_stack_card.global_position + Vector2(0.0, 32.0)
+			new_card.card_above = auto_stack_card
+			auto_stack_card.card_below = new_card
+	create_tween().tween_property(new_card, "global_position", target_position, 0.5).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	get_parent().add_child(new_card)
+
+
+func _on_auto_stack_area_2d_area_entered(area: Variant) -> void:
+	if area is not Card: return
+	# only add cards at the top of their stack
+	if area.card_data.card_type == CardData.CardType.INGREDIENT and area.card_above == null:
+		cards_in_auto_stack_area.push_back(area)
+
+
+func _on_auto_stack_area_2d_area_exited(area: Variant) -> void:
+	if area is not Card: return
+	if cards_in_auto_stack_area.has(area):
+		cards_in_auto_stack_area.erase(area)
+
+
+func get_auto_stack_card(card: Card) -> Card:
+	for auto_stack_card: Card in cards_in_auto_stack_area:
+		var is_auto_stackable: bool = true
+		if auto_stack_card.card_data.ingredient_type != card.card_data.ingredient_type: continue
+		var child_cards: Array[Card] = auto_stack_card.get_child_cards()
+		for child_card: Card in child_cards:
+			if child_card.card_data.ingredient_type != auto_stack_card.card_data.ingredient_type:
+				# differing card type, so we can't auto stack
+				is_auto_stackable = false
+				break
+		if is_auto_stackable:
+			return auto_stack_card
+	return null

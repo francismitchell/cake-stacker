@@ -1,12 +1,12 @@
 [gd_scene format=3 uid="uid://bc3fqoc4p5pxw"]
 
-[ext_resource type="PackedScene" uid="uid://bcxuomucc1wt7" path="res://cards/card_control.tscn" id="1_kikvd"]
-[ext_resource type="Script" uid="uid://ccowodygcw3ba" path="res://cards/card.gd" id="1_nwofj"]
-[ext_resource type="Script" uid="uid://csbqe0bi83708" path="res://ingredient_data.gd" id="2_4k7q8"]
+[ext_resource type="PackedScene" uid="uid://bcxuomucc1wt7" path="res://cards/scenes/card_control.tscn" id="1_kikvd"]
+[ext_resource type="Script" uid="uid://ccowodygcw3ba" path="res://cards/scripts/card.gd" id="1_nwofj"]
+[ext_resource type="Script" uid="uid://csbqe0bi83708" path="res://cards/scripts/ingredient_data.gd" id="2_4k7q8"]
+[ext_resource type="Texture2D" uid="uid://c6x13ivn88pya" path="res://icon.svg" id="4_ixyhn"]
 
-[sub_resource type="Resource" id="Resource_h2yge"]
+[sub_resource type="Resource" id="Resource_dvc08"]
 script = ExtResource("2_4k7q8")
-ingredient_type = 3
 metadata/_custom_type_script = "uid://csbqe0bi83708"
 
 [sub_resource type="ViewportTexture" id="ViewportTexture_vf1vs"]
@@ -21,14 +21,29 @@ font_color = Color(0.30161053, 0.5553811, 0, 1)
 [sub_resource type="LabelSettings" id="LabelSettings_f61jr"]
 font_color = Color(0.87203085, 0, 0.4091008, 1)
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ixyhn"]
+bg_color = Color(0.80784315, 0.80784315, 0.80784315, 0.11764706)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_032ga"]
+bg_color = Color(0.9318973, 0.9318972, 0.931897, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.3032328, 0.30323288, 0.30323264, 1)
+
 [node name="Card" type="Area2D" unique_id=484967368]
 script = ExtResource("1_nwofj")
-card_data = SubResource("Resource_h2yge")
+card_data = SubResource("Resource_dvc08")
 
 [node name="SubViewport" type="SubViewport" parent="." unique_id=39141999]
 size = Vector2i(128, 192)
 
 [node name="PanelContainer" parent="SubViewport" unique_id=1840125192 instance=ExtResource("1_kikvd")]
+texture = ExtResource("4_ixyhn")
+
+[node name="Label" parent="SubViewport/PanelContainer/MarginContainer/VBoxContainer" parent_id_path=PackedInt32Array(1840125192, 2085091651) index="0" unique_id=940296338]
+text = "None"
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1874383692]
 texture = SubResource("ViewportTexture_vf1vs")
@@ -53,6 +68,17 @@ offset_right = 164.0
 offset_bottom = 90.0
 text = "card below"
 label_settings = SubResource("LabelSettings_f61jr")
+
+[node name="BakerProgressBar" type="ProgressBar" parent="." unique_id=1771479529]
+visible = false
+offset_left = -64.0
+offset_top = 96.0
+offset_right = 64.0
+offset_bottom = 123.0
+size_flags_horizontal = 4
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_styles/background = SubResource("StyleBoxFlat_ixyhn")
+theme_override_styles/fill = SubResource("StyleBoxFlat_032ga")
 
 [connection signal="area_entered" from="." to="." method="_on_area_entered"]
 [connection signal="area_exited" from="." to="." method="_on_area_exited"]
