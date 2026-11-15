@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dx44xqfpfufdc"
-path="res://.godot/imported/egg.png-2e0ef951d6cf35a8c58b05c0cd47b519.ctex"
+uid="uid://bsd4x6wunutrm"
+path="res://.godot/imported/muck.jpg-6e67f4154ae47f42d8d47c6dcc0685f9.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://cards/images/egg.png"
-dest_files=["res://.godot/imported/egg.png-2e0ef951d6cf35a8c58b05c0cd47b519.ctex"]
+source_file="res://cards/images/muck.jpg"
+dest_files=["res://.godot/imported/muck.jpg-6e67f4154ae47f42d8d47c6dcc0685f9.ctex"]
 
 [params]
 

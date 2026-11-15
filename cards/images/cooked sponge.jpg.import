@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://qrejyu1hsyyq"
-path="res://.godot/imported/sludge.png-712b9bdf975e8e450baec671d6a803a4.ctex"
+uid="uid://dmmirudra72td"
+path="res://.godot/imported/cooked sponge.jpg-1f890b737cee73ce40c03e989dddf16c.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://cards/images/sludge.png"
-dest_files=["res://.godot/imported/sludge.png-712b9bdf975e8e450baec671d6a803a4.ctex"]
+source_file="res://cards/images/cooked sponge.jpg"
+dest_files=["res://.godot/imported/cooked sponge.jpg-1f890b737cee73ce40c03e989dddf16c.ctex"]
 
 [params]
 

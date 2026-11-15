@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://c5a88ka0sp48y"
-path="res://.godot/imported/cooked sponge.png-0d0d9eb1685cda207dcbbb0dd08e36b5.ctex"
+uid="uid://ddr7a7u00disw"
+path="res://.godot/imported/Holo muck cake.jpg-c45324e6cd4164579caba64d77bc9813.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://cards/images/cooked sponge.png"
-dest_files=["res://.godot/imported/cooked sponge.png-0d0d9eb1685cda207dcbbb0dd08e36b5.ctex"]
+source_file="res://cards/images/Holo muck cake.jpg"
+dest_files=["res://.godot/imported/Holo muck cake.jpg-c45324e6cd4164579caba64d77bc9813.ctex"]
 
 [params]
 

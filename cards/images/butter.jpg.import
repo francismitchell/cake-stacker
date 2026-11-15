@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dwos73agc62pa"
-path="res://.godot/imported/cake.png-ff1732ee1299e577e313691eb98c929e.ctex"
+uid="uid://bh7csgm67mbtg"
+path="res://.godot/imported/butter.jpg-90bd74415972f9804be5b424e8d43ec4.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://cards/images/cake.png"
-dest_files=["res://.godot/imported/cake.png-ff1732ee1299e577e313691eb98c929e.ctex"]
+source_file="res://cards/images/butter.jpg"
+dest_files=["res://.godot/imported/butter.jpg-90bd74415972f9804be5b424e8d43ec4.ctex"]
 
 [params]
 
