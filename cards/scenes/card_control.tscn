@@ -1,7 +1,9 @@
 [gd_scene format=3 uid="uid://bcxuomucc1wt7"]
 
-[ext_resource type="Texture2D" uid="uid://dx44xqfpfufdc" path="res://cards/images/egg.png" id="1_yd2ms"]
 [ext_resource type="Texture2D" uid="uid://bginowa2m1jf0" path="res://cards/images/stars/gold.png" id="2_6ius8"]
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_efu05"]
+load_path = "res://.godot/imported/egg.jpg-43f06c2446f5728064beb27992353879.ctex"
 
 [sub_resource type="LabelSettings" id="LabelSettings_6fs7m"]
 font_size = 24
@@ -13,7 +15,7 @@ custom_minimum_size = Vector2(128, 192)
 custom_maximum_size = Vector2(128, 192)
 offset_right = 128.0
 offset_bottom = 192.0
-texture = ExtResource("1_yd2ms")
+texture = SubResource("CompressedTexture2D_efu05")
 
 [node name="MarginContainer" type="MarginContainer" parent="." unique_id=1855553077]
 clip_contents = true

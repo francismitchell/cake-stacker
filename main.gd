@@ -1,5 +1,7 @@
 extends ColorRect
 
+const SOURCE_CARD_SCENE = preload("res://cards/scenes/source_card.tscn")
+
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	# setup proper object picking for cards
@@ -9,7 +11,7 @@ func _ready() -> void:
 	SignalBus.source_card_purchased.connect(_on_source_card_purchased)
 
 func _on_source_card_purchased(ingredient_type: IngredientData.IngredientType) -> void:
-	var new_card: Card = Card.CARD_SCENE.instantiate()
+	var new_card: Card = SOURCE_CARD_SCENE.instantiate()
 	var card_data: IngredientData = IngredientData.new()
 	card_data.card_type = CardData.CardType.INGREDIENT_SOURCE
 	card_data.ingredient_type = ingredient_type
