@@ -195,6 +195,9 @@ func baker_process_ingredients() -> void:
 	new_card.card_data = new_ingredient_data
 	new_card.global_position = global_position
 	var target_position = global_position + Vector2(0.0, 196.0).rotated(randf() * TAU)
+	# hard coded image half sizes
+	target_position.x = clampf(target_position.x, 64.0, get_viewport().get_visible_rect().size.x - 64.0)
+	target_position.y = clampf(target_position.y, 96.0, get_viewport().get_visible_rect().size.y - 96.0)
 	create_tween().tween_property(new_card, "global_position", target_position, 0.5).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 	get_parent().add_child(new_card)
 	for card: Card in cards_above:
@@ -208,6 +211,9 @@ func baker_create_ingredient(_loop_count: int) -> void:
 	new_card.card_data = new_ingredient_data
 	new_card.global_position = global_position
 	var target_position = global_position + Vector2(0.0, 196.0).rotated(randf() * TAU)
+	# hard coded image half sizes
+	target_position.x = clampf(target_position.x, 64.0, get_viewport().get_visible_rect().size.x - 64.0)
+	target_position.y = clampf(target_position.y, 96.0, get_viewport().get_visible_rect().size.y - 96.0)
 	# IMPORTANT: only ingredient source cards have an auto stack area, so we must query it
 	var auto_stack_card: Card = card_above.get_auto_stack_card(new_card)
 	if auto_stack_card:
