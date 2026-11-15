@@ -4,6 +4,7 @@ extends Area2D
 
 const CARD_SCENE = preload("res://cards/scenes/card.tscn")
 const PROCESS_TIME: float = 2.0
+const SHOP_OPEN_TIME: float = 0.5
 const MAX_AUTO_STACK_SIZE: int = 12
 const STACK_SPACING: Vector2 = Vector2(0.0, 32.0)
 
@@ -26,6 +27,7 @@ var is_dragging: bool = false:
 			if baker_progress_bar_tween:
 				baker_progress_bar_tween.kill()
 			$BakerProgressBar.hide()
+var draggable: bool = true
 var mouse_position_offset: Vector2 = Vector2.ZERO
 var cards_in_area: Array = []
 var card_above: Card = null:
@@ -35,20 +37,8 @@ var card_above: Card = null:
 		if card_above:
 			if last_card_above and card_above != last_card_above:
 				last_card_above.card_below = null
-		if card_above and card_above.card_data.card_type == CardData.CardType.INGREDIENT and card_data.card_type == CardData.CardType.BAKER:
-			# start cooking
-			$BakerProgressBar.show()
-			baker_progress_bar_tween = create_tween()
-			baker_progress_bar_tween.tween_property($BakerProgressBar, "value", 100.0, PROCESS_TIME).from(0.0)
-			baker_progress_bar_tween.finished.connect(baker_process_ingredients)
-			baker_progress_bar_tween.finished.connect($BakerProgressBar.hide)
-		elif card_above and card_above.card_data.card_type == CardData.CardType.INGREDIENT_SOURCE and card_data.card_type == CardData.CardType.BAKER:
-			# start producing new ingredient
-			$BakerProgressBar.show()
-			baker_progress_bar_tween = create_tween()
-			baker_progress_bar_tween.set_loops()
-			baker_progress_bar_tween.tween_property($BakerProgressBar, "value", 100.0, PROCESS_TIME).from(0.0)
-			baker_progress_bar_tween.loop_finished.connect(baker_create_ingredient)
+			if card_data.card_type == CardData.CardType.BAKER:
+				process_baker_logic()
 var card_below: Card = null:
 	set(value):
 		var last_card_below = card_below
@@ -70,18 +60,24 @@ func initialise_card_visuals() -> void:
 	if card_data is IngredientData:
 		card_data.card_name = IngredientData.ingredient_name_dict[card_data.ingredient_type]
 		card_label.text = card_data.card_name
-		card_texture.texture = IngredientData.ingredient_texture_dict[card_data.ingredient_type]
-		card_quality_texture.texture = IngredientData.ingredient_quality_texture_dict[card_data.ingredient_quality]
+		if card_data.card_type == CardData.CardType.INGREDIENT:
+			card_texture.texture = IngredientData.ingredient_texture_dict[card_data.ingredient_type]
+			card_quality_texture.texture = IngredientData.ingredient_quality_texture_dict[card_data.ingredient_quality]
+		elif card_data.card_type == CardData.CardType.INGREDIENT_SOURCE:
+			card_texture.texture = IngredientData.ingredient_source_texture_dict[card_data.ingredient_type]
 	if card_data.card_type == CardData.CardType.BAKER:
 		card_label.text = "Baker"
-		card_texture.texture = preload("res://cards/images/baker.png")
+		card_texture.texture = preload("res://cards/images/baker.jpg")
 		card_quality_texture.texture = null
+	elif card_data.card_type == CardData.CardType.SHOP:
+		card_label.text = "Shop"
+		draggable = false
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(_delta: float) -> void:
 	# drag and move cards
-	if is_dragging:
+	if is_dragging and draggable:
 		global_position = get_global_mouse_position() - mouse_position_offset
 		var next_stack_position: Vector2 = global_position
 		var below: Card = card_below
@@ -93,6 +89,7 @@ func _process(_delta: float) -> void:
 func _on_input_event(_viewport: Node, event: InputEvent, _shape_idx: int) -> void:
 	if event is InputEventMouseButton:
 		if event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+			if not draggable: return
 			is_dragging = true
 			# ensure dragged card is always at the top of the canvas
 			z_index = 99
@@ -177,16 +174,41 @@ func get_child_cards() -> Array[Card]:
 	return child_cards	
 
 
+func process_baker_logic() -> void:
+	if card_above.card_data.card_type == CardData.CardType.INGREDIENT:
+		# start cooking
+		$BakerProgressBar.show()
+		baker_progress_bar_tween = create_tween()
+		baker_progress_bar_tween.tween_property($BakerProgressBar, "value", 100.0, PROCESS_TIME).from(0.0)
+		baker_progress_bar_tween.finished.connect(baker_process_ingredients)
+		baker_progress_bar_tween.finished.connect($BakerProgressBar.hide)
+	elif card_above.card_data.card_type == CardData.CardType.INGREDIENT_SOURCE:
+		# start producing new ingredient
+		$BakerProgressBar.show()
+		baker_progress_bar_tween = create_tween()
+		baker_progress_bar_tween.set_loops()
+		baker_progress_bar_tween.tween_property($BakerProgressBar, "value", 100.0, PROCESS_TIME).from(0.0)
+		baker_progress_bar_tween.loop_finished.connect(baker_create_ingredient)
+	elif card_above.card_data.card_type == CardData.CardType.SHOP:
+		# start producing new ingredient
+		$BakerProgressBar.show()
+		baker_progress_bar_tween = create_tween()
+		baker_progress_bar_tween.tween_property($BakerProgressBar, "value", 100.0, SHOP_OPEN_TIME).from(0.0)
+		baker_progress_bar_tween.finished.connect(SignalBus.open_shop_card_processed.emit)
+		baker_progress_bar_tween.finished.connect($BakerProgressBar.hide)
+
+
 func baker_process_ingredients() -> void:
 	var ingredients_in: Dictionary[IngredientData.IngredientType, int] = {}
 	var card_above_this = card_above
 	var cards_above: Array[Card]
 	while card_above_this:
-		cards_above.push_back(card_above_this)
-		if ingredients_in.has(card_above_this.card_data.ingredient_type):
-			ingredients_in[card_above_this.card_data.ingredient_type] += 1
-		else:
-			ingredients_in[card_above_this.card_data.ingredient_type] = 1
+		if card_above_this.card_data.card_type == CardData.CardType.INGREDIENT:
+			cards_above.push_back(card_above_this)
+			if ingredients_in.has(card_above_this.card_data.ingredient_type):
+				ingredients_in[card_above_this.card_data.ingredient_type] += 1
+			else:
+				ingredients_in[card_above_this.card_data.ingredient_type] = 1
 		card_above_this = card_above_this.card_above
 	var new_ingredient_data = IngredientData.new()
 	new_ingredient_data.ingredient_type = RecipeManager.process_ingredients(ingredients_in)
