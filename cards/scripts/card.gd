@@ -40,7 +40,9 @@ var card_above: Card = null:
 			if card_above.card_data.card_type == CardData.CardType.SELL:
 				# TODO implement sell logic
 				for child_card: Card in get_child_cards():
+					if child_card.card_data.card_type == CardData.CardType.BAKER and CardData.num_bakers <= 1: continue
 					child_card.queue_free()
+				if card_data.card_type == CardData.CardType.BAKER and CardData.num_bakers <= 1: return
 				queue_free()
 			elif card_data.card_type == CardData.CardType.BAKER:
 				process_baker_logic()
@@ -248,6 +250,11 @@ func play_spawn_animation(from_global_position: Vector2) -> void:
 
 
 func baker_create_ingredient(_loop_count: int) -> void:
+	# edge case: return if card above no longer valid for some reason
+	if not card_above: 
+		baker_progress_bar_tween.kill()
+		$BakerProgressBar.hide()
+		return
 	var new_ingredient_data = IngredientData.new()
 	new_ingredient_data.ingredient_type = card_above.card_data.ingredient_type
 	var new_card: Card = CARD_SCENE.instantiate()
