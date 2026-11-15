@@ -2,6 +2,8 @@
 class_name Card
 extends Area2D
 
+const CARD_SCENE = preload("res://cards/card.tscn")
+
 @export var card_data: CardData:
 	set(value):
 		if card_data and card_data.changed.is_connected(initialise_card_visuals):
@@ -10,7 +12,6 @@ extends Area2D
 		if card_data:
 			card_data.changed.connect(initialise_card_visuals)
 		initialise_card_visuals()
-
 @onready var card_label: Label = $SubViewport/PanelContainer/MarginContainer/VBoxContainer/Label
 @onready var card_texture: TextureRect = $SubViewport/PanelContainer
 
@@ -24,6 +25,28 @@ var card_above: Card = null:
 		if card_above:
 			if last_card_above and card_above != last_card_above:
 				last_card_above.card_below = null
+		if card_above and card_data.card_type == CardData.CardType.BAKER:
+			# start cooking
+			var ingredients_in: Dictionary[IngredientData.IngredientType, int] = {}
+			var card_above_this = card_above
+			var cards_above: Array[Card]
+			while card_above_this:
+				cards_above.push_back(card_above_this)
+				if ingredients_in.has(card_above_this.card_data.ingredient_type):
+					ingredients_in[card_above_this.card_data.ingredient_type] += 1
+				else:
+					ingredients_in[card_above_this.card_data.ingredient_type] = 1
+				card_above_this = card_above_this.card_above
+			var new_ingredient_data = IngredientData.new()
+			new_ingredient_data.ingredient_type = RecipeManager.process_ingredients(ingredients_in)
+			var new_card: Card = CARD_SCENE.instantiate()
+			new_card.card_data = new_ingredient_data
+			new_card.global_position = card_above.global_position
+			create_tween().tween_property(new_card, "global_position", new_card.global_position + Vector2(randf_range(-128.0, 128.0),randf_range(-128.0, 128.0)), 0.5).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+			get_parent().add_child(new_card)
+			for card: Card in cards_above:
+				card.queue_free()
+				
 var card_below: Card = null:
 	set(value):
 		var last_card_below = card_below
@@ -45,8 +68,10 @@ func initialise_card_visuals() -> void:
 		card_data.card_name = IngredientData.ingredient_name_dict[card_data.ingredient_type]
 		card_label.text = card_data.card_name
 		card_texture.texture = IngredientData.ingredient_texture_dict[card_data.ingredient_type]
-		if card_data.ingredient_type in [IngredientData.IngredientType.EGG, IngredientData.IngredientType.FLOUR]:
-			$SubViewport/PanelContainer/MarginContainer/VBoxContainer/Label.hide()
+	if card_data.card_type == CardData.CardType.BAKER:
+		card_label.text = "Baker"
+		card_texture.texture = preload("res://icon.svg")
+
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(_delta: float) -> void:

@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://bcxuomucc1wt7"]
 
-[ext_resource type="Texture2D" uid="uid://dx44xqfpfufdc" path="res://egg test.png" id="1_yd2ms"]
+[ext_resource type="Texture2D" uid="uid://dx44xqfpfufdc" path="res://egg.png" id="1_yd2ms"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_6fs7m"]
 font_size = 24
