@@ -3,7 +3,7 @@ class_name Card
 extends Area2D
 
 const CARD_SCENE = preload("res://cards/scenes/card.tscn")
-const PROCESS_TIME: float = 2.0
+const PROCESS_TIME: float = 1.0
 const SHOP_OPEN_TIME: float = 0.5
 const MAX_AUTO_STACK_SIZE: int = 12
 const STACK_SPACING: Vector2 = Vector2(0.0, 32.0)
@@ -37,7 +37,12 @@ var card_above: Card = null:
 		if card_above:
 			if last_card_above and card_above != last_card_above:
 				last_card_above.card_below = null
-			if card_data.card_type == CardData.CardType.BAKER:
+			if card_above.card_data.card_type == CardData.CardType.SELL:
+				# TODO implement sell logic
+				for child_card: Card in get_child_cards():
+					child_card.queue_free()
+				queue_free()
+			elif card_data.card_type == CardData.CardType.BAKER:
 				process_baker_logic()
 var card_below: Card = null:
 	set(value):
@@ -71,6 +76,9 @@ func initialise_card_visuals() -> void:
 		card_quality_texture.texture = null
 	elif card_data.card_type == CardData.CardType.SHOP:
 		card_label.text = "Shop"
+		draggable = false
+	elif card_data.card_type == CardData.CardType.SELL:
+		card_label.text = "Sell/bin"
 		draggable = false
 
 
@@ -145,6 +153,14 @@ func _on_input_event(_viewport: Node, event: InputEvent, _shape_idx: int) -> voi
 				card_below_this.z_index = i
 				card_below_this = card_below_this.card_below
 				i += 1
+
+
+# HACK sometimes undragging doesn't work as intended so this is a fail safe
+func _input(event: InputEvent) -> void:
+	if event is InputEventMouseButton:
+		if event.is_released() and event.button_index == MOUSE_BUTTON_LEFT:
+			is_dragging = false
+
 
 func reposition_cards() -> void:
 	var target_position = card_above.global_position + STACK_SPACING
