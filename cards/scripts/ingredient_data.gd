@@ -14,7 +14,15 @@ enum IngredientType {
 	BASIC_SPONGE, 
 	VICTORIA_SPONGE, 
 	CAKE, 
-	ICING
+	BUTTERCREAM,
+	GENOISE,
+	SWISS_ROLL,
+	COCOA_POWDER,
+	CARROT,
+	CREAM_CHEESE,
+	CREAM_CHEESE_FROSTING,
+	CARROT_SPONGE,
+	CARROT_CAKE
 	}
 enum IngredientQuality {NONE, SILVER, GOLD, PLATINUM}
 
@@ -27,24 +35,51 @@ const ingredient_name_dict: Dictionary[IngredientType, String] = {
 	IngredientType.FLOUR: "Flour",
 	IngredientType.STRAWBERRY: "Strawberry",
 	IngredientType.JAM: "Jam",
-	IngredientType.BASIC_SPONGE: "Sponge",
+	IngredientType.BASIC_SPONGE: "Basic Sponge",
 	IngredientType.VICTORIA_SPONGE: "Victoria Sponge",
 	IngredientType.CAKE: "Cake",
-	IngredientType.ICING: "Icing"
+	IngredientType.BUTTERCREAM: "Buttercream",
+	IngredientType.GENOISE: "Genoise Sponge",
+	IngredientType.SWISS_ROLL: "Swiss Roll",
+	IngredientType.COCOA_POWDER: "Cocoa Powder",
+	IngredientType.CARROT: "Carrot",
+	IngredientType.CREAM_CHEESE: "Cream Cheese",
+	IngredientType.CREAM_CHEESE_FROSTING: "Cream Cheese Frosting",
+	IngredientType.CARROT_SPONGE: "Carrot Sponge",
+	IngredientType.CARROT_CAKE: "Carrot Cake"
 }
 const ingredient_texture_dict: Dictionary[IngredientType, Texture2D] = {
 	IngredientType.NONE: preload("res://cards/images/missing_tex.png"),
-	IngredientType.FAILED_RECIPE: preload("res://cards/images/sludge.png"),
-	IngredientType.BUTTER: preload("res://cards/images/missing_tex.png"),
+	IngredientType.FAILED_RECIPE: preload("res://cards/images/muck.jpg"),
+	IngredientType.BUTTER: preload("res://cards/images/butter.jpg"),
 	IngredientType.SUGAR: preload("res://cards/images/missing_tex.png"),
-	IngredientType.EGG: preload("res://cards/images/egg.png"),
+	IngredientType.EGG: preload("res://cards/images/egg.jpg"),
 	IngredientType.FLOUR: preload("res://cards/images/missing_tex.png"),
 	IngredientType.STRAWBERRY: preload("res://cards/images/missing_tex.png"),
 	IngredientType.JAM: preload("res://cards/images/missing_tex.png"),
-	IngredientType.BASIC_SPONGE: preload("res://cards/images/cooked sponge.png"),
+	IngredientType.BASIC_SPONGE: preload("res://cards/images/cooked sponge.jpg"),
 	IngredientType.VICTORIA_SPONGE: preload("res://cards/images/missing_tex.png"),
-	IngredientType.CAKE: preload("res://cards/images/cake.png"),
-	IngredientType.ICING: preload("res://cards/images/missing_tex.png")
+	IngredientType.CAKE: preload("res://cards/images/cake.jpg"),
+	IngredientType.BUTTERCREAM: preload("res://cards/images/missing_tex.png"),
+	IngredientType.GENOISE: preload("res://cards/images/missing_tex.png"),
+	IngredientType.SWISS_ROLL: preload("res://cards/images/missing_tex.png"),
+	IngredientType.COCOA_POWDER: preload("res://cards/images/missing_tex.png"),
+	IngredientType.CARROT: preload("res://cards/images/missing_tex.png"),
+	IngredientType.CREAM_CHEESE: preload("res://cards/images/missing_tex.png"),
+	IngredientType.CREAM_CHEESE_FROSTING: preload("res://cards/images/missing_tex.png"),
+	IngredientType.CARROT_SPONGE: preload("res://cards/images/missing_tex.png"),
+	IngredientType.CARROT_CAKE: preload("res://cards/images/missing_tex.png")
+}
+const ingredient_source_texture_dict: Dictionary[IngredientType, Texture2D] = {
+	IngredientType.NONE: preload("res://cards/images/missing_tex.png"),
+	IngredientType.BUTTER: preload("res://cards/images/missing_tex.png"),
+	IngredientType.SUGAR: preload("res://cards/images/missing_tex.png"),
+	IngredientType.EGG: preload("res://cards/images/egg_source.jpg"),
+	IngredientType.FLOUR: preload("res://cards/images/missing_tex.png"),
+	IngredientType.STRAWBERRY: preload("res://cards/images/missing_tex.png"),
+	IngredientType.COCOA_POWDER: preload("res://cards/images/missing_tex.png"),
+	IngredientType.CARROT: preload("res://cards/images/missing_tex.png"),
+	IngredientType.CREAM_CHEESE: preload("res://cards/images/missing_tex.png")
 }
 const ingredient_quality_texture_dict: Dictionary[IngredientQuality, Texture2D] = {
 	IngredientQuality.NONE: null,
