@@ -22,7 +22,8 @@ enum IngredientType {
 	CREAM_CHEESE,
 	CREAM_CHEESE_FROSTING,
 	CARROT_SPONGE,
-	CARROT_CAKE
+	CARROT_CAKE,
+	DOUBLE_CARROT_SPONGE
 	}
 enum IngredientQuality {NONE, SILVER, GOLD, PLATINUM}
 
@@ -46,7 +47,8 @@ const ingredient_name_dict: Dictionary[IngredientType, String] = {
 	IngredientType.CREAM_CHEESE: "Cream Cheese",
 	IngredientType.CREAM_CHEESE_FROSTING: "Cream Cheese Frosting",
 	IngredientType.CARROT_SPONGE: "Carrot Sponge",
-	IngredientType.CARROT_CAKE: "Carrot Cake"
+	IngredientType.CARROT_CAKE: "Carrot Cake",
+	IngredientType.DOUBLE_CARROT_SPONGE: "Double Carrot Cake"
 }
 const ingredient_texture_dict: Dictionary[IngredientType, Texture2D] = {
 	IngredientType.NONE: preload("res://cards/images/missing_tex.png"),
@@ -67,8 +69,9 @@ const ingredient_texture_dict: Dictionary[IngredientType, Texture2D] = {
 	IngredientType.CARROT: preload("res://cards/images/missing_tex.png"),
 	IngredientType.CREAM_CHEESE: preload("res://cards/images/missing_tex.png"),
 	IngredientType.CREAM_CHEESE_FROSTING: preload("res://cards/images/missing_tex.png"),
-	IngredientType.CARROT_SPONGE: preload("res://cards/images/missing_tex.png"),
-	IngredientType.CARROT_CAKE: preload("res://cards/images/missing_tex.png")
+	IngredientType.CARROT_SPONGE: preload("res://cards/images/carrot_sponge.jpg"),
+	IngredientType.CARROT_CAKE: preload("res://cards/images/carrot_cake.jpg"),
+	IngredientType.DOUBLE_CARROT_SPONGE: preload("res://cards/images/double_carrot_sponge.jpg")
 }
 const ingredient_source_texture_dict: Dictionary[IngredientType, Texture2D] = {
 	IngredientType.NONE: preload("res://cards/images/missing_tex.png"),

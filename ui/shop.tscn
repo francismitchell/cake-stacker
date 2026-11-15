@@ -2,10 +2,40 @@
 
 [ext_resource type="Script" uid="uid://bar2fdcmjjrx4" path="res://ui/scripts/shop.gd" id="1_2v8nf"]
 [ext_resource type="PackedScene" uid="uid://bc3fqoc4p5pxw" path="res://cards/scenes/card.tscn" id="2_1slnd"]
-[ext_resource type="PackedScene" uid="uid://b0srap7gslasg" path="res://ui/buy_source_card_button.tscn" id="2_2v8nf"]
+[ext_resource type="Script" uid="uid://csbqe0bi83708" path="res://cards/scripts/ingredient_data.gd" id="3_e4u7y"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_vf1vs"]
 font_size = 64
+
+[sub_resource type="Resource" id="Resource_t603m"]
+script = ExtResource("3_e4u7y")
+ingredient_type = 2
+card_type = 5
+metadata/_custom_type_script = "uid://csbqe0bi83708"
+
+[sub_resource type="Resource" id="Resource_1slnd"]
+script = ExtResource("3_e4u7y")
+ingredient_type = 6
+card_type = 5
+metadata/_custom_type_script = "uid://csbqe0bi83708"
+
+[sub_resource type="Resource" id="Resource_e4u7y"]
+script = ExtResource("3_e4u7y")
+ingredient_type = 14
+card_type = 5
+metadata/_custom_type_script = "uid://csbqe0bi83708"
+
+[sub_resource type="Resource" id="Resource_67uj7"]
+script = ExtResource("3_e4u7y")
+ingredient_type = 15
+card_type = 5
+metadata/_custom_type_script = "uid://csbqe0bi83708"
+
+[sub_resource type="Resource" id="Resource_qxnrq"]
+script = ExtResource("3_e4u7y")
+ingredient_type = 16
+card_type = 5
+metadata/_custom_type_script = "uid://csbqe0bi83708"
 
 [node name="Shop" type="Control" unique_id=497939941]
 layout_mode = 3
@@ -31,6 +61,7 @@ theme_override_constants/margin_bottom = 256
 
 [node name="PanelContainer" type="PanelContainer" parent="MarginContainer" unique_id=1850597657]
 layout_mode = 2
+mouse_filter = 2
 
 [node name="MarginContainer" type="MarginContainer" parent="MarginContainer/PanelContainer" unique_id=67118042]
 layout_mode = 2
@@ -55,26 +86,60 @@ layout_mode = 2
 theme_override_constants/separation = 64
 alignment = 1
 
-[node name="Card" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer" unique_id=484967368 instance=ExtResource("2_1slnd")]
-
-[node name="BuySourceCardButton" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer" unique_id=1797213622 instance=ExtResource("2_2v8nf")]
+[node name="Control" type="Control" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer" unique_id=136446151]
+custom_minimum_size = Vector2(128, 196)
+custom_maximum_size = Vector2(128, 196)
 layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
 
-[node name="BuySourceCardButton2" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer" unique_id=503572249 instance=ExtResource("2_2v8nf")]
-layout_mode = 2
-ingredient_type = 6
+[node name="Card" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/Control" unique_id=484967368 instance=ExtResource("2_1slnd")]
+position = Vector2(64, 98)
+card_data = SubResource("Resource_t603m")
 
-[node name="BuySourceCardButton3" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer" unique_id=1832502376 instance=ExtResource("2_2v8nf")]
+[node name="Control2" type="Control" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer" unique_id=964418862]
+custom_minimum_size = Vector2(128, 196)
+custom_maximum_size = Vector2(128, 196)
 layout_mode = 2
-ingredient_type = 14
+size_flags_horizontal = 3
+mouse_filter = 2
 
-[node name="BuySourceCardButton4" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer" unique_id=1486965016 instance=ExtResource("2_2v8nf")]
-layout_mode = 2
-ingredient_type = 15
+[node name="Card" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/Control2" unique_id=1324911956 instance=ExtResource("2_1slnd")]
+position = Vector2(64, 98)
+card_data = SubResource("Resource_1slnd")
 
-[node name="BuySourceCardButton5" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer" unique_id=3655812 instance=ExtResource("2_2v8nf")]
+[node name="Control3" type="Control" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer" unique_id=789040014]
+custom_minimum_size = Vector2(128, 196)
+custom_maximum_size = Vector2(128, 196)
 layout_mode = 2
-ingredient_type = 16
+size_flags_horizontal = 3
+mouse_filter = 2
+
+[node name="Card" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/Control3" unique_id=530948243 instance=ExtResource("2_1slnd")]
+position = Vector2(64, 98)
+card_data = SubResource("Resource_e4u7y")
+
+[node name="Control4" type="Control" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer" unique_id=915727077]
+custom_minimum_size = Vector2(128, 196)
+custom_maximum_size = Vector2(128, 196)
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+
+[node name="Card" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/Control4" unique_id=887246111 instance=ExtResource("2_1slnd")]
+position = Vector2(64, 98)
+card_data = SubResource("Resource_67uj7")
+
+[node name="Control5" type="Control" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer" unique_id=1308060415]
+custom_minimum_size = Vector2(128, 196)
+custom_maximum_size = Vector2(128, 196)
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+
+[node name="Card" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/Control5" unique_id=1246261061 instance=ExtResource("2_1slnd")]
+position = Vector2(64, 98)
+card_data = SubResource("Resource_qxnrq")
 
 [node name="CloseButton" type="Button" parent="MarginContainer/PanelContainer/MarginContainer" unique_id=916830427]
 layout_mode = 2

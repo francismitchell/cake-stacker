@@ -2,7 +2,7 @@
 class_name CardData
 extends Resource
 
-enum CardType {BAKER, INGREDIENT, INGREDIENT_SOURCE, SHOP, SELL}
+enum CardType {BAKER, INGREDIENT, INGREDIENT_SOURCE, SHOP, SELL, BUY_INGREDIENT_SOURCE}
 
 var card_name: String = ""
 @export var card_type: CardType = CardType.INGREDIENT:

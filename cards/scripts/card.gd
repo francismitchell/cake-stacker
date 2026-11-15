@@ -116,7 +116,7 @@ func _on_input_event(_viewport: Node, event: InputEvent, _shape_idx: int) -> voi
 			if not cards_in_area.is_empty():
 				# find first card with nothing below it
 				for card: Card in cards_in_area:
-					if card.card_below == null and card not in get_child_cards():
+					if card.card_below == null and card.is_visible_in_tree() and card not in get_child_cards():
 						card.card_below = self
 						card_above = card
 						z_index = card_above.z_index + 1
@@ -214,7 +214,13 @@ func process_baker_logic() -> void:
 		baker_progress_bar_tween.tween_property($BakerProgressBar, "value", 100.0, SHOP_OPEN_TIME).from(0.0)
 		baker_progress_bar_tween.finished.connect(SignalBus.open_shop_card_processed.emit)
 		baker_progress_bar_tween.finished.connect($BakerProgressBar.hide)
-
+	elif card_above.card_data.card_type == CardData.CardType.BUY_INGREDIENT_SOURCE:
+		# start buying card
+		$BakerProgressBar.show()
+		baker_progress_bar_tween = create_tween()
+		baker_progress_bar_tween.tween_property($BakerProgressBar, "value", 100.0, SHOP_OPEN_TIME).from(0.0)
+		baker_progress_bar_tween.finished.connect(SignalBus.source_card_purchased.emit.bind(card_above.card_data.ingredient_type, global_position))
+		baker_progress_bar_tween.finished.connect($BakerProgressBar.hide)
 
 func baker_process_ingredients() -> void:
 	var ingredients_in: Dictionary[IngredientData.IngredientType, int] = {}
