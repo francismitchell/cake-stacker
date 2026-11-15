@@ -150,11 +150,11 @@ func _on_input_event(_viewport: Node, event: InputEvent, _shape_idx: int) -> voi
 				i += 1
 
 func reposition_cards() -> void:
-	var target_position = card_above.global_position + Vector2(0.0, 32.0)
+	var target_position = card_above.global_position + STACK_SPACING
 	create_tween().tween_property(self, "global_position", target_position, 0.25).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 	var i = 1
 	for child_card: Card in get_child_cards():
-		create_tween().tween_property(child_card, "global_position", target_position + i * Vector2(0.0, 32.0), 0.25).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+		create_tween().tween_property(child_card, "global_position", target_position + i * STACK_SPACING, 0.25).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 		i += 1
 
 
@@ -228,14 +228,14 @@ func baker_create_ingredient(_loop_count: int) -> void:
 				baker_progress_bar_tween.kill()
 				$BakerProgressBar.hide()
 				return
-			target_position = child_cards.back().global_position + Vector2(0.0, 32.0)
+			target_position = child_cards.back().global_position + STACK_SPACING
 			# TODO fix this horrible pattern of having to set both cards
 			# make it so that we only do it once, e.g. a single join_cards function
 			new_card.card_above = child_cards.back()
 			child_cards.back().card_below = new_card
 			new_card.z_index = new_card.card_above.z_index + 1
 		else:
-			target_position = auto_stack_card.global_position + Vector2(0.0, 32.0)
+			target_position = auto_stack_card.global_position + STACK_SPACING
 			new_card.card_above = auto_stack_card
 			auto_stack_card.card_below = new_card
 			new_card.z_index = 0
