@@ -5,6 +5,7 @@ extends Area2D
 const CARD_SCENE = preload("res://cards/scenes/card.tscn")
 const PROCESS_TIME: float = 2.0
 const MAX_AUTO_STACK_SIZE: int = 12
+const STACK_SPACING: Vector2 = Vector2(0.0, 32.0)
 
 @export var card_data: CardData:
 	set(value):
@@ -55,7 +56,6 @@ var card_below: Card = null:
 		if card_below:
 			if last_card_below and card_below != last_card_below:
 				last_card_below.card_below = null
-var child_cards_to_move: Array[Card] = []
 var baker_progress_bar_tween: Tween = null
 var cards_in_auto_stack_area: Array[Card] = []
 
@@ -74,7 +74,7 @@ func initialise_card_visuals() -> void:
 		card_quality_texture.texture = IngredientData.ingredient_quality_texture_dict[card_data.ingredient_quality]
 	if card_data.card_type == CardData.CardType.BAKER:
 		card_label.text = "Baker"
-		card_texture.texture = preload("res://icon.svg")
+		card_texture.texture = preload("res://cards/images/baker.png")
 		card_quality_texture.texture = null
 
 
@@ -82,12 +82,13 @@ func initialise_card_visuals() -> void:
 func _process(_delta: float) -> void:
 	# drag and move cards
 	if is_dragging:
-		var target_position = get_global_mouse_position() - mouse_position_offset
-		for child_card: Card in child_cards_to_move:
-			var offset = child_card.global_position - global_position
-			child_card.global_position = target_position + offset
-		global_position = target_position
-
+		global_position = get_global_mouse_position() - mouse_position_offset
+		var next_stack_position: Vector2 = global_position
+		var below: Card = card_below
+		while below:
+			next_stack_position += STACK_SPACING
+			below.global_position = next_stack_position
+			below = below.card_below
 
 func _on_input_event(_viewport: Node, event: InputEvent, _shape_idx: int) -> void:
 	if event is InputEventMouseButton:
@@ -97,11 +98,9 @@ func _on_input_event(_viewport: Node, event: InputEvent, _shape_idx: int) -> voi
 			z_index = 99
 			# store mouse position offset so that cards drag from selected pixel
 			mouse_position_offset = get_global_mouse_position() - global_position
-			# get child cards to move with this one
-			child_cards_to_move = get_child_cards()
 			# ensure child cards are z sorted above this one
 			var i: int = z_index + 1
-			for child_card: Card in child_cards_to_move:
+			for child_card: Card in get_child_cards():
 				child_card.z_index = i
 				i += 1
 		elif event.is_released() and event.button_index == MOUSE_BUTTON_LEFT:
@@ -204,6 +203,12 @@ func baker_process_ingredients() -> void:
 		card.queue_free()
 
 
+func play_spawn_animation(from_global_position: Vector2) -> void:
+	var sprite: Sprite2D = $Sprite2D
+	sprite.offset = from_global_position - global_position
+	create_tween().tween_property(sprite, "offset", Vector2.ZERO, 0.5).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+
+
 func baker_create_ingredient(_loop_count: int) -> void:
 	var new_ingredient_data = IngredientData.new()
 	new_ingredient_data.ingredient_type = card_above.card_data.ingredient_type
@@ -233,8 +238,10 @@ func baker_create_ingredient(_loop_count: int) -> void:
 			target_position = auto_stack_card.global_position + Vector2(0.0, 32.0)
 			new_card.card_above = auto_stack_card
 			auto_stack_card.card_below = new_card
-	create_tween().tween_property(new_card, "global_position", target_position, 0.5).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+			new_card.z_index = 0
+	new_card.global_position = target_position
 	get_parent().add_child(new_card)
+	new_card.play_spawn_animation(global_position)
 
 
 func _on_auto_stack_area_2d_area_entered(area: Area2D) -> void:
