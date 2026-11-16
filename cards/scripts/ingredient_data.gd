@@ -99,9 +99,11 @@ const ingredient_quality_texture_dict: Dictionary[IngredientQuality, Texture2D] 
 	IngredientQuality.GOLD: preload("res://cards/images/stars/gold.png"),
 	IngredientQuality.PLATINUM: preload("res://cards/images/stars/plat.png")
 }
+const ingredient_sell_price: Dictionary[IngredientType, int] = {
+	IngredientType.SWISS_ROLL: 10
+}
 @export var ingredient_type: IngredientType = IngredientType.NONE:
 	set(value):
 		ingredient_type = value
 		emit_changed()
 var ingredient_quality: IngredientQuality = IngredientQuality.NONE
-var ingredient_sell_price: int = 0

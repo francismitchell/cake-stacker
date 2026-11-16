@@ -42,8 +42,10 @@ var card_above: Card = null:
 				# TODO implement sell logic
 				for child_card: Card in get_child_cards():
 					if child_card.card_data.card_type == CardData.CardType.BAKER and CardData.num_bakers <= 1: continue
+					SignalBus.card_sold.emit(child_card.card_data.card_sell_price)
 					child_card.queue_free()
 				if card_data.card_type == CardData.CardType.BAKER and CardData.num_bakers <= 1: return
+				SignalBus.card_sold.emit(card_data.card_sell_price)
 				queue_free()
 			elif card_data.card_type == CardData.CardType.BAKER:
 				process_baker_logic()
@@ -94,6 +96,8 @@ func initialise_card_visuals() -> void:
 		return
 	if card_data is IngredientData:
 		card_data.card_name = IngredientData.ingredient_name_dict[card_data.ingredient_type]
+		if IngredientData.ingredient_sell_price.has(card_data.ingredient_type):
+			card_data.card_sell_price = IngredientData.ingredient_sell_price[card_data.ingredient_type]
 		card_label.text = card_data.card_name
 		if card_data.card_type == CardData.CardType.INGREDIENT:
 			card_texture.texture = IngredientData.ingredient_texture_dict[card_data.ingredient_type]
