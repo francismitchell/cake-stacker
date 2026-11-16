@@ -60,7 +60,7 @@ const ingredient_texture_dict: Dictionary[IngredientType, Texture2D] = {
 	IngredientType.NONE: preload("res://cards/images/missing_tex.png"),
 	IngredientType.FAILED_RECIPE: preload("res://cards/images/muck.jpg"),
 	IngredientType.BUTTER: preload("res://cards/images/butter.jpg"),
-	IngredientType.SUGAR: preload("res://cards/images/missing_tex.png"),
+	IngredientType.SUGAR: preload("res://cards/images/sugar.jpg"),
 	IngredientType.EGG: preload("res://cards/images/egg.jpg"),
 	IngredientType.FLOUR: preload("res://cards/images/missing_tex.png"),
 	IngredientType.STRAWBERRY: preload("res://cards/images/missing_tex.png"),
