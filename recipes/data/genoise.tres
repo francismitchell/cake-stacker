@@ -9,5 +9,5 @@ ingredients_in = Dictionary[int, int]({
 4: 1,
 5: 1
 })
-ingredient_out = 8
+ingredient_out = 12
 metadata/_custom_type_script = "uid://5ttmt1e44ldb"
