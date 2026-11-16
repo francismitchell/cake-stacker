@@ -3,6 +3,7 @@ class_name Card
 extends Area2D
 
 const CARD_SCENE = preload("res://cards/scenes/card.tscn")
+const SOURCE_CARD_SCENE = preload("res://cards/scenes/source_card.tscn")
 const PROCESS_TIME: float = 1.0
 const SHOP_OPEN_TIME: float = 0.5
 const MAX_AUTO_STACK_SIZE: int = 12
@@ -55,6 +56,24 @@ var card_below: Card = null:
 				last_card_below.card_below = null
 var baker_progress_bar_tween: Tween = null
 var cards_in_auto_stack_area: Array[Card] = []
+
+
+static func create_ingredient_card(ingredient_type: IngredientData.IngredientType) -> Card:
+	var new_card: Card = CARD_SCENE.instantiate()
+	var ingredient_data: IngredientData = IngredientData.new()
+	ingredient_data.ingredient_type = ingredient_type
+	new_card.card_data = ingredient_data
+	return new_card
+
+
+static func create_ingredient_source_card(ingredient_type: IngredientData.IngredientType) -> Card:
+	var new_source_card: Card = SOURCE_CARD_SCENE.instantiate()
+	var ingredient_data: IngredientData = IngredientData.new()
+	ingredient_data.card_type = CardData.CardType.INGREDIENT_SOURCE
+	ingredient_data.ingredient_type = ingredient_type
+	new_source_card.card_data = ingredient_data
+	return new_source_card
+
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -234,10 +253,7 @@ func baker_process_ingredients() -> void:
 			else:
 				ingredients_in[card_above_this.card_data.ingredient_type] = 1
 		card_above_this = card_above_this.card_above
-	var new_ingredient_data = IngredientData.new()
-	new_ingredient_data.ingredient_type = RecipeManager.process_ingredients(ingredients_in)
-	var new_card: Card = CARD_SCENE.instantiate()
-	new_card.card_data = new_ingredient_data
+	var new_card: Card = create_ingredient_card(RecipeManager.process_ingredients(ingredients_in))
 	new_card.global_position = global_position
 	var target_position = global_position + Vector2(0.0, 196.0).rotated(randf() * TAU)
 	# hard coded image half sizes
@@ -261,10 +277,7 @@ func baker_create_ingredient(_loop_count: int) -> void:
 		baker_progress_bar_tween.kill()
 		$BakerProgressBar.hide()
 		return
-	var new_ingredient_data = IngredientData.new()
-	new_ingredient_data.ingredient_type = card_above.card_data.ingredient_type
-	var new_card: Card = CARD_SCENE.instantiate()
-	new_card.card_data = new_ingredient_data
+	var new_card: Card = create_ingredient_card(card_above.card_data.ingredient_type)
 	new_card.global_position = global_position
 	var target_position = global_position + Vector2(0.0, 196.0).rotated(randf() * TAU)
 	# hard coded image half sizes
