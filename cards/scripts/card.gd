@@ -57,16 +57,25 @@ var card_below: Card = null:
 var baker_progress_bar_tween: Tween = null
 var cards_in_auto_stack_area: Array[Card] = []
 
+signal card_processed
+
+static func create_baker_card() -> Card:
+	var new_baker_card: Card = CARD_SCENE.instantiate()
+	var card_data: CardData = CardData.new()
+	card_data.card_type = CardData.CardType.BAKER
+	new_baker_card.card_data = card_data
+	return new_baker_card
+
 
 static func create_ingredient_card(ingredient_type: IngredientData.IngredientType) -> Card:
-	var new_card: Card = CARD_SCENE.instantiate()
+	var new_ingredient_card: Card = CARD_SCENE.instantiate()
 	var ingredient_data: IngredientData = IngredientData.new()
 	ingredient_data.ingredient_type = ingredient_type
-	new_card.card_data = ingredient_data
-	return new_card
+	new_ingredient_card.card_data = ingredient_data
+	return new_ingredient_card
 
 
-static func create_ingredient_source_card(ingredient_type: IngredientData.IngredientType) -> Card:
+static func create_source_card(ingredient_type: IngredientData.IngredientType) -> Card:
 	var new_source_card: Card = SOURCE_CARD_SCENE.instantiate()
 	var ingredient_data: IngredientData = IngredientData.new()
 	ingredient_data.card_type = CardData.CardType.INGREDIENT_SOURCE
@@ -226,6 +235,7 @@ func process_baker_logic() -> void:
 		baker_progress_bar_tween.set_loops()
 		baker_progress_bar_tween.tween_property($BakerProgressBar, "value", 100.0, PROCESS_TIME).from(0.0)
 		baker_progress_bar_tween.loop_finished.connect(baker_create_ingredient)
+		baker_progress_bar_tween.loop_finished.connect(card_above.card_processed.emit)
 	elif card_above.card_data.card_type == CardData.CardType.SHOP:
 		# start producing new ingredient
 		$BakerProgressBar.show()
