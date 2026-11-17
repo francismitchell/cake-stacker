@@ -29,6 +29,7 @@ var is_dragging: bool = false:
 				baker_progress_bar_tween.kill()
 			$BakerProgressBar.hide()
 var draggable: bool = true
+@export var processable: bool = true
 var mouse_position_offset: Vector2 = Vector2.ZERO
 var cards_in_area: Array = []
 var card_above: Card = null:
@@ -225,6 +226,7 @@ func get_child_cards() -> Array[Card]:
 
 
 func process_baker_logic() -> void:
+	if not card_above.processable: return
 	if card_above.card_data.card_type == CardData.CardType.INGREDIENT:
 		# start cooking
 		$BakerProgressBar.show()
