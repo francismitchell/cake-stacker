@@ -43,30 +43,15 @@ func run_tutorial() -> void:
 	var baker: Card = Card.create_baker_card()
 	baker.global_position = get_viewport().get_visible_rect().size / 2.0 + Vector2(randf_range(-500.0, 500.0), randf_range(-500.0, 500.0))
 	add_child(baker)
-	#await add_card(Card.create_source_card(IngredientData.IngredientType.FLOUR), get_viewport().get_visible_rect().size / 2.0 + Vector2(randf_range(-500.0, 500.0), randf_range(-500.0, 500.0))).card_processed
+	await add_card(Card.create_source_card(IngredientData.IngredientType.FLOUR), get_viewport().get_visible_rect().size / 2.0 + Vector2(randf_range(-500.0, 500.0), randf_range(-500.0, 500.0))).card_processed
 	add_card(Card.create_source_card(IngredientData.IngredientType.EGG), get_viewport().get_visible_rect().size / 2.0 + Vector2(randf_range(-500.0, 500.0), randf_range(-500.0, 500.0)))
 	add_card(Card.create_source_card(IngredientData.IngredientType.SUGAR), get_viewport().get_visible_rect().size / 2.0 + Vector2(randf_range(-500.0, 500.0), randf_range(-500.0, 500.0)))
-	#await await_ingredient_created(IngredientData.IngredientType.GENOISE)
+	await SignalBus.await_ingredient_created(IngredientData.IngredientType.GENOISE)
 	$Cards/ShopCard.show()
-	#await await_ingredient_created(IngredientData.IngredientType.SWISS_ROLL)
+	await SignalBus.await_ingredient_created(IngredientData.IngredientType.SWISS_ROLL)
 	$Cards/SellCard.show()
-	# TODO await specifically for a swiss roll to be sold (will probably have to send ingredienttype with the signal instead of money)
-	# if send ingredienttype then can lookup using dictionary
-	await await_ingredient_sold(IngredientData.IngredientType.SWISS_ROLL)
+	await SignalBus.await_ingredient_sold(IngredientData.IngredientType.SWISS_ROLL)
 	$MarginContainer/MoneyLabel.show()
-
-
-func await_ingredient_created(ingredient: IngredientData.IngredientType) -> void:
-	var ingredient_created: IngredientData.IngredientType = IngredientData.IngredientType.NONE
-	while ingredient_created != ingredient:
-		ingredient_created = await RecipeManager.ingredient_created
-
-
-func await_ingredient_sold(ingredient: IngredientData.IngredientType) -> void:
-	var ingredient_sold: IngredientData.IngredientType = IngredientData.IngredientType.NONE
-	var card_sold: CardData = await SignalBus.card_sold
-	while card_sold.card_type != CardData.CardType.INGREDIENT or card_sold.ingredient_type != ingredient:
-		card_sold = await SignalBus.card_sold
 
 
 func add_card(card: Card, card_global_position: Vector2) -> Card:
