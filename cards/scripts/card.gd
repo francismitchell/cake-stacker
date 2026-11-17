@@ -42,10 +42,10 @@ var card_above: Card = null:
 				# TODO implement sell logic
 				for child_card: Card in get_child_cards():
 					if child_card.card_data.card_type == CardData.CardType.BAKER and CardData.num_bakers <= 1: continue
-					SignalBus.card_sold.emit(child_card.card_data.card_sell_price)
+					SignalBus.card_sold.emit(child_card.card_data)
 					child_card.queue_free()
 				if card_data.card_type == CardData.CardType.BAKER and CardData.num_bakers <= 1: return
-				SignalBus.card_sold.emit(card_data.card_sell_price)
+				SignalBus.card_sold.emit(card_data)
 				queue_free()
 			elif card_data.card_type == CardData.CardType.BAKER:
 				process_baker_logic()
