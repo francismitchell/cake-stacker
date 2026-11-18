@@ -33,33 +33,12 @@ var draggable: bool = true
 @export var processable: bool = true
 var mouse_position_offset: Vector2 = Vector2.ZERO
 var cards_in_area: Array = []
-var card_above: Card = null:
-	set(value):
-		var last_card_above = card_above
-		card_above = value
-		if card_above:
-			if last_card_above and card_above != last_card_above:
-				last_card_above.card_below = null
-			if card_above.card_data.card_type == CardData.CardType.SELL:
-				# TODO implement sell logic
-				for child_card: Card in get_child_cards():
-					if child_card.card_data.card_type == CardData.CardType.BAKER and CardData.num_bakers <= 1: continue
-					SignalBus.card_sold.emit(child_card.card_data)
-					child_card.queue_free()
-				if card_data.card_type == CardData.CardType.BAKER and CardData.num_bakers <= 1: return
-				SignalBus.card_sold.emit(card_data)
-				queue_free()
-			elif card_data.card_type == CardData.CardType.BAKER:
-				process_baker_logic()
-		card_above_changed.emit(card_above)
-var card_below: Card = null:
-	set(value):
-		var last_card_below = card_below
-		card_below = value
-		if card_below:
-			if last_card_below and card_below != last_card_below:
-				last_card_below.card_below = null
-		card_below_changed.emit(card_below)
+var card_above: Card:
+	get: return _card_above
+var card_below: Card:
+	get: return _card_below
+var _card_above: Card = null
+var _card_below: Card = null
 var baker_progress_bar_tween: Tween = null
 var cards_in_auto_stack_area: Array[Card] = []
 
@@ -67,6 +46,30 @@ signal card_processed
 signal card_released
 signal card_above_changed
 signal card_below_changed
+
+
+# ALWAYS use this to join cards
+static func join(upper: Card, lower: Card) -> void:
+	var old_upper: Card = lower._card_above
+	if old_upper:
+		old_upper._card_below = null
+	lower._card_above = upper
+	upper._card_below = lower
+	if old_upper:
+		old_upper.card_below_changed.emit(null)
+	upper.card_below_changed.emit(lower)
+	lower.card_above_changed.emit(upper)
+
+
+func detach() -> void:
+	var old_upper: Card = _card_above
+	if old_upper == null:
+		return
+	old_upper._card_below = null
+	_card_above = null
+	old_upper.card_below_changed.emit(null)
+	card_above_changed.emit(null)
+
 
 
 static func create_baker_card() -> Card:
@@ -100,6 +103,26 @@ func _ready() -> void:
 	visibility_changed.connect(func(): processable = true if is_visible_in_tree() else false)
 	visibility_changed.connect(func(): card_above = null if is_visible_in_tree() else card_above)
 	visibility_changed.connect(func(): card_below = null if is_visible_in_tree() else card_below)
+	card_above_changed.connect(_on_card_above_changed)
+
+
+func _exit_tree() -> void:
+	# make sure to detach cards when selling/deleting cards so that we don't have broken references
+	detach()
+
+
+func _on_card_above_changed(_card: Card) -> void:
+	if card_above:
+		if card_above.card_data.card_type == CardData.CardType.SELL:
+			for child_card: Card in get_child_cards():
+				if child_card.card_data.card_type == CardData.CardType.BAKER and CardData.num_bakers <= 1: continue
+				SignalBus.card_sold.emit(child_card.card_data)
+				child_card.queue_free()
+			if card_data.card_type == CardData.CardType.BAKER and CardData.num_bakers <= 1: return
+			SignalBus.card_sold.emit(card_data)
+			queue_free()
+		elif card_data.card_type == CardData.CardType.BAKER:
+			process_baker_logic()
 
 
 func initialise_card_visuals() -> void:
@@ -164,8 +187,7 @@ func _on_input_event(_viewport: Node, event: InputEvent, _shape_idx: int) -> voi
 				# find first card with nothing below it
 				for card: Card in cards_in_area:
 					if card.card_below == null and card.is_visible_in_tree() and card not in get_child_cards():
-						card.card_below = self
-						card_above = card
+						Card.join(card, self)
 						z_index = card_above.z_index + 1
 						reposition_cards()
 						break
@@ -176,7 +198,7 @@ func _on_input_event(_viewport: Node, event: InputEvent, _shape_idx: int) -> voi
 				# remove this card from above card if above card not one of the cards in dropped area
 				if card_above:
 					if card_above not in cards_in_area:
-						card_above.card_below = null
+						detach()
 				# if all cards in area are cards child cards, remove this card's card above
 				var all_cards_in_area_are_children: bool = true
 				for card: Card in cards_in_area:
@@ -185,12 +207,7 @@ func _on_input_event(_viewport: Node, event: InputEvent, _shape_idx: int) -> voi
 					card_above = null
 					z_index = 0
 			else:
-				if card_above:
-					card_above.card_below = null
-					card_above = null
-				if card_below:
-					card_below.card_above = null
-					card_below = null
+				detach()
 			# z sorting
 			if card_above:
 				z_index = card_above.z_index + 1
@@ -319,15 +336,11 @@ func baker_create_ingredient(_loop_count: int) -> void:
 				$BakerProgressBar.hide()
 				return
 			target_position = child_cards.back().global_position + STACK_SPACING
-			# TODO fix this horrible pattern of having to set both cards
-			# make it so that we only do it once, e.g. a single join_cards function
-			new_card.card_above = child_cards.back()
-			child_cards.back().card_below = new_card
+			Card.join(child_cards.back(), new_card)
 			new_card.z_index = new_card.card_above.z_index + 1
 		else:
 			target_position = auto_stack_card.global_position + STACK_SPACING
-			new_card.card_above = auto_stack_card
-			auto_stack_card.card_below = new_card
+			Card.join(auto_stack_card, new_card)
 			new_card.z_index = 0
 	new_card.global_position = target_position
 	get_parent().add_child(new_card)
