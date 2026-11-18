@@ -2,54 +2,27 @@
 
 [ext_resource type="Script" uid="uid://ve301y1mwtcr" path="res://main.gd" id="1_0xm2m"]
 [ext_resource type="PackedScene" uid="uid://bc3fqoc4p5pxw" path="res://cards/scenes/card.tscn" id="1_ig7tw"]
-[ext_resource type="Script" uid="uid://8yc6urmskxx0" path="res://cards/scripts/card_data.gd" id="3_1bvp3"]
 [ext_resource type="Script" uid="uid://csbqe0bi83708" path="res://cards/scripts/ingredient_data.gd" id="3_h2yge"]
-[ext_resource type="PackedScene" uid="uid://dit5pf0o1j1jh" path="res://cards/scenes/source_card.tscn" id="5_lquwl"]
 [ext_resource type="PackedScene" uid="uid://bx4u2cw1eei6b" path="res://ui/shop.tscn" id="6_7mycd"]
 
-[sub_resource type="Resource" id="Resource_5vw27"]
-script = ExtResource("3_1bvp3")
-card_type = 0
-metadata/_custom_type_script = "uid://8yc6urmskxx0"
+[sub_resource type="LabelSettings" id="LabelSettings_1bvp3"]
+font_size = 48
+outline_size = 8
+outline_color = Color(0, 0, 0, 1)
 
-[sub_resource type="Resource" id="Resource_efxa6"]
-script = ExtResource("3_1bvp3")
-card_type = 3
-metadata/_custom_type_script = "uid://8yc6urmskxx0"
-
-[sub_resource type="Resource" id="Resource_dg77c"]
-script = ExtResource("3_1bvp3")
-card_type = 4
-metadata/_custom_type_script = "uid://8yc6urmskxx0"
-
-[sub_resource type="Resource" id="Resource_4c57u"]
+[sub_resource type="Resource" id="Resource_1bvp3"]
 script = ExtResource("3_h2yge")
-ingredient_type = 4
-card_type = 2
+card_type = 3
 metadata/_custom_type_script = "uid://csbqe0bi83708"
 
 [sub_resource type="Resource" id="Resource_lquwl"]
 script = ExtResource("3_h2yge")
-ingredient_type = 5
-card_type = 2
+card_type = 4
 metadata/_custom_type_script = "uid://csbqe0bi83708"
 
 [sub_resource type="Resource" id="Resource_7mycd"]
 script = ExtResource("3_h2yge")
-ingredient_type = 3
-card_type = 2
-metadata/_custom_type_script = "uid://csbqe0bi83708"
-
-[sub_resource type="Resource" id="Resource_272bh"]
-script = ExtResource("3_h2yge")
-ingredient_type = 2
-card_type = 2
-metadata/_custom_type_script = "uid://csbqe0bi83708"
-
-[sub_resource type="Resource" id="Resource_kek77"]
-script = ExtResource("3_h2yge")
-ingredient_type = 6
-card_type = 2
+ingredient_type = 13
 metadata/_custom_type_script = "uid://csbqe0bi83708"
 
 [node name="Main" type="ColorRect" unique_id=242468426]
@@ -62,40 +35,55 @@ mouse_filter = 2
 color = Color(0.98039216, 0.9490196, 0.88235295, 1)
 script = ExtResource("1_0xm2m")
 
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=2082550550]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 16
+
+[node name="MoneyLabel" type="Label" parent="MarginContainer" unique_id=6344849]
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 0
+text = "£999"
+label_settings = SubResource("LabelSettings_1bvp3")
+
 [node name="Cards" type="Node2D" parent="." unique_id=1719419547]
 
-[node name="Card" parent="Cards" unique_id=448750641 instance=ExtResource("1_ig7tw")]
-position = Vector2(327, 260)
-card_data = SubResource("Resource_5vw27")
-
 [node name="ShopCard" parent="Cards" unique_id=484967368 instance=ExtResource("1_ig7tw")]
-position = Vector2(88, 128)
-card_data = SubResource("Resource_efxa6")
+position = Vector2(124, 123)
+card_data = SubResource("Resource_1bvp3")
+processable = true
 
-[node name="SellCard" parent="Cards" unique_id=1694913556 instance=ExtResource("1_ig7tw")]
-position = Vector2(248, 128)
-card_data = SubResource("Resource_dg77c")
-
-[node name="Card9" parent="Cards" unique_id=1263457921 instance=ExtResource("5_lquwl")]
-position = Vector2(640, 393)
-card_data = SubResource("Resource_4c57u")
-
-[node name="Card10" parent="Cards" unique_id=1796217692 instance=ExtResource("5_lquwl")]
-position = Vector2(761, 144)
+[node name="SellCard" parent="Cards" unique_id=7901968 instance=ExtResource("1_ig7tw")]
+position = Vector2(288, 123)
 card_data = SubResource("Resource_lquwl")
+processable = true
 
-[node name="Card11" parent="Cards" unique_id=908113377 instance=ExtResource("5_lquwl")]
-position = Vector2(1084, 150)
+[node name="Card" parent="Cards" unique_id=285781960 instance=ExtResource("1_ig7tw")]
+position = Vector2(290, 629)
 card_data = SubResource("Resource_7mycd")
-
-[node name="Card12" parent="Cards" unique_id=52562387 instance=ExtResource("5_lquwl")]
-position = Vector2(1407, 145)
-card_data = SubResource("Resource_272bh")
-
-[node name="Card13" parent="Cards" unique_id=429864815 instance=ExtResource("5_lquwl")]
-position = Vector2(1718, 137)
-card_data = SubResource("Resource_kek77")
+processable = true
 
 [node name="Shop" parent="." unique_id=497939941 instance=ExtResource("6_7mycd")]
 visible = false
+z_index = 1
 layout_mode = 1
+
+[node name="Card" parent="Shop/MarginContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/Butter" parent_id_path=PackedInt32Array(497939941, 136446151) index="0" unique_id=484967368]
+processable = true
+
+[node name="Card" parent="Shop/MarginContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/Cocoa" parent_id_path=PackedInt32Array(497939941, 789040014) index="0" unique_id=530948243]
+processable = false
+
+[node name="Card" parent="Shop/MarginContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/Carrot" parent_id_path=PackedInt32Array(497939941, 915727077) index="0" unique_id=887246111]
+processable = false
+
+[node name="Card" parent="Shop/MarginContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/CreamCheese" parent_id_path=PackedInt32Array(497939941, 1308060415) index="0" unique_id=1246261061]
+processable = false
+
+[editable path="Shop"]
