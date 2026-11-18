@@ -176,6 +176,7 @@ func _process(_delta: float) -> void:
 			below = below.card_below
 
 
+# handle drag starts here, i.e. when the card area is clicked
 func _on_input_event(_viewport: Node, event: InputEvent, _shape_idx: int) -> void:
 	if event is InputEventMouseButton:
 		if event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
@@ -184,40 +185,43 @@ func _on_input_event(_viewport: Node, event: InputEvent, _shape_idx: int) -> voi
 			is_dragging = true
 			# store mouse position offset so that cards drag from selected pixel
 			mouse_position_offset = get_global_mouse_position() - global_position
-		elif event.is_released() and event.button_index == MOUSE_BUTTON_LEFT:
-			is_dragging = false
-			# check if dropped on a card or stack
-			if not cards_in_area.is_empty():
-				# find first card with nothing below it
-				for card: Card in cards_in_area:
-					if card.card_below == null and card.is_visible_in_tree() and card not in get_child_cards():
-						Card.join(card, self)
-						reposition_cards()
-						break
-					# if dropped onto card that is already above it, reset position of this card and its children
-					elif card.card_below == self:
-						reposition_cards()
-						break
-				# remove this card from above card if above card not one of the cards in dropped area
-				if card_above:
-					if card_above not in cards_in_area:
-						detach()
-				# if all cards in area are cards child cards, remove this card's card above
-				var all_cards_in_area_are_children: bool = true
-				for card: Card in cards_in_area:
-					if card not in get_child_cards(): all_cards_in_area_are_children = false
-				if all_cards_in_area_are_children: 
-					detach()
-			else:
-				detach()
-			card_released.emit()
 
 
-# HACK sometimes undragging doesn't work as intended so this is a fail safe
+# handle drops here
 func _input(event: InputEvent) -> void:
+	if not is_dragging: return
 	if event is InputEventMouseButton:
 		if event.is_released() and event.button_index == MOUSE_BUTTON_LEFT:
-			is_dragging = false
+			_drop()
+
+
+func _drop() -> void:
+	is_dragging = false
+	# check if dropped on a card or stack
+	if not cards_in_area.is_empty():
+		# find first card with nothing below it
+		for card: Card in cards_in_area:
+			if card.card_below == null and card.is_visible_in_tree() and card not in get_child_cards():
+				Card.join(card, self)
+				reposition_cards()
+				break
+			# if dropped onto card that is already above it, reset position of this card and its children
+			elif card.card_below == self:
+				reposition_cards()
+				break
+		# remove this card from above card if above card not one of the cards in dropped area
+		if card_above:
+			if card_above not in cards_in_area:
+				detach()
+		# if all cards in area are cards child cards, remove this card's card above
+		var all_cards_in_area_are_children: bool = true
+		for card: Card in cards_in_area:
+			if card not in get_child_cards(): all_cards_in_area_are_children = false
+		if all_cards_in_area_are_children: 
+			detach()
+	else:
+		detach()
+	card_released.emit()
 
 
 func _on_area_entered(area: Area2D) -> void:
