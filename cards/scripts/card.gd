@@ -8,6 +8,7 @@ const PROCESS_TIME: float = 1.0
 const SHOP_OPEN_TIME: float = 0.5
 const MAX_AUTO_STACK_SIZE: int = 12
 const STACK_SPACING: Vector2 = Vector2(0.0, 32.0)
+const DRAGGING_Z_INDEX: int = 500
 
 @export var card_data: CardData:
 	set(value):
@@ -24,7 +25,9 @@ const STACK_SPACING: Vector2 = Vector2(0.0, 32.0)
 
 var is_dragging: bool = false:
 	set(value):
+		if value == is_dragging: return
 		is_dragging = value
+		reassign_z_indices()
 		if is_dragging and card_data.card_type == CardData.CardType.BAKER:
 			if baker_progress_bar_tween:
 				baker_progress_bar_tween.kill()
@@ -33,6 +36,7 @@ var draggable: bool = true
 @export var processable: bool = true
 var mouse_position_offset: Vector2 = Vector2.ZERO
 var cards_in_area: Array = []
+# make these private variables with public getters to deter setting from outside script
 var card_above: Card:
 	get: return _card_above
 var card_below: Card:
@@ -49,6 +53,7 @@ signal card_below_changed
 
 
 # ALWAYS use this to join cards
+# use upper/lower nomenclature as we are working in join space
 static func join(upper: Card, lower: Card) -> void:
 	var old_upper: Card = lower._card_above
 	if old_upper:
@@ -56,7 +61,9 @@ static func join(upper: Card, lower: Card) -> void:
 	lower._card_above = upper
 	upper._card_below = lower
 	if old_upper:
+		old_upper.reassign_z_indices()
 		old_upper.card_below_changed.emit(null)
+	upper.reassign_z_indices()
 	upper.card_below_changed.emit(lower)
 	lower.card_above_changed.emit(upper)
 
@@ -67,6 +74,8 @@ func detach() -> void:
 		return
 	old_upper._card_below = null
 	_card_above = null
+	old_upper.reassign_z_indices()
+	reassign_z_indices()
 	old_upper.card_below_changed.emit(null)
 	card_above_changed.emit(null)
 
@@ -74,9 +83,9 @@ func detach() -> void:
 
 static func create_baker_card() -> Card:
 	var new_baker_card: Card = load(CARD_SCENE_PATH).instantiate()
-	var card_data: CardData = CardData.new()
-	card_data.card_type = CardData.CardType.BAKER
-	new_baker_card.card_data = card_data
+	var baker_card_data: CardData = CardData.new()
+	baker_card_data.card_type = CardData.CardType.BAKER
+	new_baker_card.card_data = baker_card_data
 	return new_baker_card
 
 
@@ -101,8 +110,10 @@ static func create_source_card(ingredient_type: IngredientData.IngredientType) -
 func _ready() -> void:
 	initialise_card_visuals()
 	visibility_changed.connect(func(): processable = true if is_visible_in_tree() else false)
-	visibility_changed.connect(func(): card_above = null if is_visible_in_tree() else card_above)
-	visibility_changed.connect(func(): card_below = null if is_visible_in_tree() else card_below)
+	visibility_changed.connect(func(): 
+		if not is_visible_in_tree():
+			detach()
+			if card_below: card_below.detach())
 	card_above_changed.connect(_on_card_above_changed)
 
 
@@ -171,15 +182,8 @@ func _on_input_event(_viewport: Node, event: InputEvent, _shape_idx: int) -> voi
 			if not draggable: return
 			animation.basic_squeeze()
 			is_dragging = true
-			# ensure dragged card is always at the top of the canvas
-			z_index = 99
 			# store mouse position offset so that cards drag from selected pixel
 			mouse_position_offset = get_global_mouse_position() - global_position
-			# ensure child cards are z sorted above this one
-			var i: int = z_index + 1
-			for child_card: Card in get_child_cards():
-				child_card.z_index = i
-				i += 1
 		elif event.is_released() and event.button_index == MOUSE_BUTTON_LEFT:
 			is_dragging = false
 			# check if dropped on a card or stack
@@ -188,7 +192,6 @@ func _on_input_event(_viewport: Node, event: InputEvent, _shape_idx: int) -> voi
 				for card: Card in cards_in_area:
 					if card.card_below == null and card.is_visible_in_tree() and card not in get_child_cards():
 						Card.join(card, self)
-						z_index = card_above.z_index + 1
 						reposition_cards()
 						break
 					# if dropped onto card that is already above it, reset position of this card and its children
@@ -204,21 +207,9 @@ func _on_input_event(_viewport: Node, event: InputEvent, _shape_idx: int) -> voi
 				for card: Card in cards_in_area:
 					if card not in get_child_cards(): all_cards_in_area_are_children = false
 				if all_cards_in_area_are_children: 
-					card_above = null
-					z_index = 0
+					detach()
 			else:
 				detach()
-			# z sorting
-			if card_above:
-				z_index = card_above.z_index + 1
-			else:
-				z_index = 0
-			var i = z_index + 1
-			var card_below_this: Card = card_below
-			while card_below_this:
-				card_below_this.z_index = i
-				card_below_this = card_below_this.card_below
-				i += 1
 			card_released.emit()
 
 
@@ -227,15 +218,6 @@ func _input(event: InputEvent) -> void:
 	if event is InputEventMouseButton:
 		if event.is_released() and event.button_index == MOUSE_BUTTON_LEFT:
 			is_dragging = false
-
-
-func reposition_cards() -> void:
-	var target_position = card_above.global_position + STACK_SPACING
-	create_tween().tween_property(self, "global_position", target_position, 0.25).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-	var i = 1
-	for child_card: Card in get_child_cards():
-		create_tween().tween_property(child_card, "global_position", target_position + i * STACK_SPACING, 0.25).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-		i += 1
 
 
 func _on_area_entered(area: Area2D) -> void:
@@ -254,7 +236,41 @@ func get_child_cards() -> Array[Card]:
 	while card_below_this:
 		child_cards.push_back(card_below_this) 
 		card_below_this = card_below_this.card_below
-	return child_cards	
+	return child_cards
+
+
+func reposition_cards() -> void:
+	var target_position = card_above.global_position + STACK_SPACING
+	create_tween().tween_property(self, "global_position", target_position, 0.25).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	var i = 1
+	for child_card: Card in get_child_cards():
+		create_tween().tween_property(child_card, "global_position", target_position + i * STACK_SPACING, 0.25).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+		i += 1
+
+
+func reassign_z_indices() -> void:
+	var card: Card = get_top_card()
+	var i: int = 0
+	var lifted: bool = false
+	while card:
+		lifted = lifted or card.is_dragging
+		card.z_index = i + (DRAGGING_Z_INDEX if lifted else 0)
+		card = card.card_below
+		i += 1
+
+
+func get_top_card() -> Card:
+	var top_card: Card = self
+	while top_card.card_above:
+		top_card = top_card.card_above
+	return top_card
+
+
+func get_bottom_card() -> Card:
+	var bottom_card: Card = self
+	while bottom_card.card_below:
+		bottom_card = bottom_card.card_below
+	return bottom_card
 
 
 func process_baker_logic() -> void:
@@ -337,11 +353,9 @@ func baker_create_ingredient(_loop_count: int) -> void:
 				return
 			target_position = child_cards.back().global_position + STACK_SPACING
 			Card.join(child_cards.back(), new_card)
-			new_card.z_index = new_card.card_above.z_index + 1
 		else:
 			target_position = auto_stack_card.global_position + STACK_SPACING
 			Card.join(auto_stack_card, new_card)
-			new_card.z_index = 0
 	new_card.global_position = target_position
 	get_parent().add_child(new_card)
 	new_card.animation.play_spawn_animation(global_position)
