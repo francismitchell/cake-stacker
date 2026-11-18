@@ -11,7 +11,7 @@ func _ready() -> void:
 	# setup proper object picking for cards
 	get_viewport().set_physics_object_picking_sort(true)
 	get_viewport().set_physics_object_picking_first_only(true)
-	SignalBus.open_shop_card_processed.connect($Shop.show)
+	SignalBus.open_shop_card_processed.connect(func(): $Shop.visible = not $Shop.visible)
 	SignalBus.source_card_purchased.connect(_on_source_card_purchased)
 	SignalBus.card_sold.connect(_on_card_sold)
 	run_tutorial()
@@ -42,7 +42,7 @@ func run_tutorial() -> void:
 	# spawn in a baker card and a flour source card
 	var baker: Card = Card.create_baker_card()
 	baker.global_position = get_viewport().get_visible_rect().size / 2.0 + Vector2(randf_range(-500.0, 500.0), randf_range(-500.0, 500.0))
-	add_child(baker)
+	$Cards.add_child(baker)
 	await add_card(Card.create_source_card(IngredientData.IngredientType.FLOUR), get_viewport().get_visible_rect().size / 2.0 + Vector2(randf_range(-500.0, 500.0), randf_range(-500.0, 500.0))).card_processed
 	add_card(Card.create_source_card(IngredientData.IngredientType.EGG), get_viewport().get_visible_rect().size / 2.0 + Vector2(randf_range(-500.0, 500.0), randf_range(-500.0, 500.0)))
 	add_card(Card.create_source_card(IngredientData.IngredientType.SUGAR), get_viewport().get_visible_rect().size / 2.0 + Vector2(randf_range(-500.0, 500.0), randf_range(-500.0, 500.0)))
@@ -56,5 +56,5 @@ func run_tutorial() -> void:
 
 func add_card(card: Card, card_global_position: Vector2) -> Card:
 	card.global_position = card_global_position
-	add_child(card)
+	$Cards.add_child(card)
 	return card

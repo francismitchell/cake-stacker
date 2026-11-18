@@ -83,7 +83,6 @@ func detach() -> void:
 	card_above_changed.emit(null)
 
 
-
 static func create_baker_card() -> Card:
 	var new_baker_card: Card = load(CARD_SCENE_PATH).instantiate()
 	var baker_card_data: CardData = CardData.new()
@@ -118,6 +117,7 @@ func _ready() -> void:
 			detach()
 			if card_below: card_below.detach())
 	card_above_changed.connect(_on_card_above_changed)
+	card_below_changed.connect(_on_card_below_changed)
 
 
 func _exit_tree() -> void:
@@ -127,16 +127,21 @@ func _exit_tree() -> void:
 
 func _on_card_above_changed(_card: Card) -> void:
 	if card_above:
-		if card_above.card_data.card_type == CardData.CardType.SELL:
+		if card_data.card_type == CardData.CardType.BAKER:
+			process_baker_logic()
+
+
+func _on_card_below_changed(_card: Card) -> void:
+	if card_below:
+		# handle sell logic
+		if card_data.card_type == CardData.CardType.SELL:
 			for child_card: Card in get_child_cards():
-				if child_card.card_data.card_type == CardData.CardType.BAKER and CardData.num_bakers <= 1: continue
-				SignalBus.card_sold.emit(child_card.card_data)
-				child_card.queue_free()
+					if child_card.card_data.card_type == CardData.CardType.BAKER and CardData.num_bakers <= 1: continue
+					SignalBus.card_sold.emit(child_card.card_data)
+					child_card.queue_free()
 			if card_data.card_type == CardData.CardType.BAKER and CardData.num_bakers <= 1: return
 			SignalBus.card_sold.emit(card_data)
-			queue_free()
-		elif card_data.card_type == CardData.CardType.BAKER:
-			process_baker_logic()
+			card_below.queue_free()
 
 
 func initialise_card_visuals() -> void:
