@@ -20,6 +20,7 @@ const STACK_SPACING: Vector2 = Vector2(0.0, 32.0)
 @onready var card_label: Label = $SubViewport/PanelContainer/MarginContainer/Label
 @onready var card_texture: TextureRect = $SubViewport/PanelContainer
 @onready var card_quality_texture: TextureRect = $SubViewport/PanelContainer/StarTextureRect
+@onready var animation = $Animation
 
 var is_dragging: bool = false:
 	set(value):
@@ -62,6 +63,7 @@ var cards_in_auto_stack_area: Array[Card] = []
 
 signal card_processed
 
+
 static func create_baker_card() -> Card:
 	var new_baker_card: Card = CARD_SCENE.instantiate()
 	var card_data: CardData = CardData.new()
@@ -91,6 +93,8 @@ static func create_source_card(ingredient_type: IngredientData.IngredientType) -
 func _ready() -> void:
 	initialise_card_visuals()
 	visibility_changed.connect(func(): processable = true if is_visible_in_tree() else false)
+	visibility_changed.connect(func(): card_above = null if is_visible_in_tree() else card_above)
+	visibility_changed.connect(func(): card_below = null if is_visible_in_tree() else card_below)
 
 
 func initialise_card_visuals() -> void:
@@ -116,6 +120,8 @@ func initialise_card_visuals() -> void:
 	elif card_data.card_type == CardData.CardType.SELL:
 		card_label.text = "Sell/bin"
 		draggable = false
+	# important to ensure that viewport renders this frame
+	$SubViewport.render_target_update_mode = SubViewport.UPDATE_ONCE
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -130,11 +136,12 @@ func _process(_delta: float) -> void:
 			below.global_position = next_stack_position
 			below = below.card_below
 
+
 func _on_input_event(_viewport: Node, event: InputEvent, _shape_idx: int) -> void:
 	if event is InputEventMouseButton:
 		if event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 			if not draggable: return
-			$Animation.basic_squeeze()
+			animation.basic_squeeze()
 			is_dragging = true
 			# ensure dragged card is always at the top of the canvas
 			z_index = 99
@@ -259,6 +266,7 @@ func process_baker_logic() -> void:
 		baker_progress_bar_tween.finished.connect(SignalBus.source_card_purchased.emit.bind(card_above.card_data.ingredient_type, global_position))
 		baker_progress_bar_tween.finished.connect($BakerProgressBar.hide)
 
+
 func baker_process_ingredients() -> void:
 	var ingredients_in: Dictionary[IngredientData.IngredientType, int] = {}
 	var card_above_this = card_above
@@ -279,14 +287,9 @@ func baker_process_ingredients() -> void:
 	target_position.y = clampf(target_position.y, 96.0, get_viewport().get_visible_rect().size.y - 96.0)
 	create_tween().tween_property(new_card, "global_position", target_position, 0.5).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 	get_parent().add_child(new_card)
+	new_card.animation.play_spawn_animation()
 	for card: Card in cards_above:
 		card.queue_free()
-
-
-func play_spawn_animation(from_global_position: Vector2) -> void:
-	var sprite: Sprite2D = $Sprite2D
-	sprite.offset = from_global_position - global_position
-	create_tween().tween_property(sprite, "offset", Vector2.ZERO, 0.5).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 
 
 func baker_create_ingredient(_loop_count: int) -> void:
@@ -296,7 +299,6 @@ func baker_create_ingredient(_loop_count: int) -> void:
 		$BakerProgressBar.hide()
 		return
 	var new_card: Card = create_ingredient_card(card_above.card_data.ingredient_type)
-	new_card.global_position = global_position
 	var target_position = global_position + Vector2(0.0, 196.0).rotated(randf() * TAU)
 	# hard coded image half sizes
 	target_position.x = clampf(target_position.x, 64.0, get_viewport().get_visible_rect().size.x - 64.0)
@@ -323,7 +325,7 @@ func baker_create_ingredient(_loop_count: int) -> void:
 			new_card.z_index = 0
 	new_card.global_position = target_position
 	get_parent().add_child(new_card)
-	new_card.play_spawn_animation(global_position)
+	new_card.animation.play_spawn_animation(global_position)
 
 
 func _on_auto_stack_area_2d_area_entered(area: Area2D) -> void:

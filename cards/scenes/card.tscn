@@ -36,7 +36,6 @@ border_color = Color(0.3032328, 0.30323288, 0.30323264, 1)
 [node name="Card" type="Area2D" unique_id=484967368]
 script = ExtResource("1_nwofj")
 card_data = SubResource("Resource_dvc08")
-processable = null
 
 [node name="Animation" type="Node" parent="." unique_id=770371501]
 script = ExtResource("3_032ga")
