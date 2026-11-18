@@ -86,60 +86,65 @@ layout_mode = 2
 theme_override_constants/separation = 64
 alignment = 1
 
-[node name="Control" type="Control" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer" unique_id=136446151]
+[node name="Butter" type="Control" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer" unique_id=136446151]
 custom_minimum_size = Vector2(128, 196)
 custom_maximum_size = Vector2(128, 196)
 layout_mode = 2
 size_flags_horizontal = 3
 mouse_filter = 2
 
-[node name="Card" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/Control" unique_id=484967368 instance=ExtResource("2_1slnd")]
+[node name="Card" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/Butter" unique_id=484967368 instance=ExtResource("2_1slnd")]
 position = Vector2(64, 98)
 card_data = SubResource("Resource_t603m")
+processable = true
 
-[node name="Control2" type="Control" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer" unique_id=964418862]
+[node name="Strawberry" type="Control" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer" unique_id=964418862]
 custom_minimum_size = Vector2(128, 196)
 custom_maximum_size = Vector2(128, 196)
 layout_mode = 2
 size_flags_horizontal = 3
 mouse_filter = 2
 
-[node name="Card" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/Control2" unique_id=1324911956 instance=ExtResource("2_1slnd")]
+[node name="Card" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/Strawberry" unique_id=1324911956 instance=ExtResource("2_1slnd")]
 position = Vector2(64, 98)
 card_data = SubResource("Resource_1slnd")
+processable = false
 
-[node name="Control3" type="Control" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer" unique_id=789040014]
+[node name="Cocoa" type="Control" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer" unique_id=789040014]
 custom_minimum_size = Vector2(128, 196)
 custom_maximum_size = Vector2(128, 196)
 layout_mode = 2
 size_flags_horizontal = 3
 mouse_filter = 2
 
-[node name="Card" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/Control3" unique_id=530948243 instance=ExtResource("2_1slnd")]
+[node name="Card" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/Cocoa" unique_id=530948243 instance=ExtResource("2_1slnd")]
 position = Vector2(64, 98)
 card_data = SubResource("Resource_e4u7y")
+processable = true
 
-[node name="Control4" type="Control" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer" unique_id=915727077]
+[node name="Carrot" type="Control" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer" unique_id=915727077]
 custom_minimum_size = Vector2(128, 196)
 custom_maximum_size = Vector2(128, 196)
 layout_mode = 2
 size_flags_horizontal = 3
 mouse_filter = 2
 
-[node name="Card" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/Control4" unique_id=887246111 instance=ExtResource("2_1slnd")]
+[node name="Card" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/Carrot" unique_id=887246111 instance=ExtResource("2_1slnd")]
 position = Vector2(64, 98)
 card_data = SubResource("Resource_67uj7")
+processable = true
 
-[node name="Control5" type="Control" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer" unique_id=1308060415]
+[node name="CreamCheese" type="Control" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer" unique_id=1308060415]
 custom_minimum_size = Vector2(128, 196)
 custom_maximum_size = Vector2(128, 196)
 layout_mode = 2
 size_flags_horizontal = 3
 mouse_filter = 2
 
-[node name="Card" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/Control5" unique_id=1246261061 instance=ExtResource("2_1slnd")]
+[node name="Card" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/CreamCheese" unique_id=1246261061 instance=ExtResource("2_1slnd")]
 position = Vector2(64, 98)
 card_data = SubResource("Resource_qxnrq")
+processable = true
 
 [node name="CloseButton" type="Button" parent="MarginContainer/PanelContainer/MarginContainer" unique_id=916830427]
 layout_mode = 2
