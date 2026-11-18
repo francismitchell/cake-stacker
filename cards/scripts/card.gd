@@ -64,10 +64,13 @@ static func join(upper: Card, lower: Card) -> void:
 		old_upper.reassign_z_indices()
 		old_upper.card_below_changed.emit(null)
 	upper.reassign_z_indices()
+	upper.get_top_card().layout_below()
 	upper.card_below_changed.emit(lower)
 	lower.card_above_changed.emit(upper)
 
 
+# detaches this card from the one above
+# NOTE does not detach from the card below
 func detach() -> void:
 	var old_upper: Card = _card_above
 	if old_upper == null:
@@ -168,12 +171,7 @@ func _process(_delta: float) -> void:
 	# drag and move cards
 	if is_dragging and draggable:
 		global_position = get_global_mouse_position() - mouse_position_offset
-		var next_stack_position: Vector2 = global_position
-		var below: Card = card_below
-		while below:
-			next_stack_position += STACK_SPACING
-			below.global_position = next_stack_position
-			below = below.card_below
+		layout_below(false)
 
 
 # handle drag starts here, i.e. when the card area is clicked
@@ -203,11 +201,9 @@ func _drop() -> void:
 		for card: Card in cards_in_area:
 			if card.card_below == null and card.is_visible_in_tree() and card not in get_child_cards():
 				Card.join(card, self)
-				reposition_cards()
 				break
 			# if dropped onto card that is already above it, reset position of this card and its children
 			elif card.card_below == self:
-				reposition_cards()
 				break
 		# remove this card from above card if above card not one of the cards in dropped area
 		if card_above:
@@ -221,6 +217,7 @@ func _drop() -> void:
 			detach()
 	else:
 		detach()
+	get_top_card().layout_below()
 	card_released.emit()
 
 
@@ -243,13 +240,22 @@ func get_child_cards() -> Array[Card]:
 	return child_cards
 
 
-func reposition_cards() -> void:
-	var target_position = card_above.global_position + STACK_SPACING
-	create_tween().tween_property(self, "global_position", target_position, 0.25).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-	var i = 1
-	for child_card: Card in get_child_cards():
-		create_tween().tween_property(child_card, "global_position", target_position + i * STACK_SPACING, 0.25).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-		i += 1
+func layout_below(animate: bool = true) -> void:
+	var slot: Vector2 = global_position
+	var card: Card = card_below
+	# dragged cards will follow the mouse
+	while card and not card.is_dragging:
+		slot += STACK_SPACING
+		card.place_at(slot, animate)
+		card = card.card_below
+
+
+func place_at(new_global_position: Vector2, animate: bool) -> void:
+	# animation node won't be ready at load
+	if not animate or not is_node_ready():
+		global_position = new_global_position
+		return
+	animation.slide_to(new_global_position)
 
 
 func reassign_z_indices() -> void:
@@ -361,12 +367,11 @@ func baker_create_ingredient(_loop_count: int) -> void:
 				baker_progress_bar_tween.kill()
 				$BakerProgressBar.hide()
 				return
-			target_position = child_cards.back().global_position + STACK_SPACING
 			Card.join(child_cards.back(), new_card)
 		else:
-			target_position = auto_stack_card.global_position + STACK_SPACING
 			Card.join(auto_stack_card, new_card)
-	new_card.global_position = target_position
+	else:
+		new_card.global_position = target_position
 	get_parent().add_child(new_card)
 	new_card.animation.play_spawn_animation(global_position)
 
@@ -375,12 +380,12 @@ func get_auto_stack_card(card: Card) -> Card:
 	for auto_stack_card: Card in cards_in_auto_stack_area:
 		var is_auto_stackable: bool = true
 		# reject cards not at the top of the stack
-		if card_above != null: continue
+		if auto_stack_card.card_above != null: continue
 		# reject top of stack cards of different ingredient types
 		if auto_stack_card.card_data.ingredient_type != card.card_data.ingredient_type: continue
 		var child_cards: Array[Card] = auto_stack_card.get_child_cards()
 		for child_card: Card in child_cards:
-			if child_card.card_data.card_type != card_data.CardType.INGREDIENT or child_card.card_data.ingredient_type != auto_stack_card.card_data.ingredient_type:
+			if child_card.card_data.card_type != CardData.CardType.INGREDIENT or child_card.card_data.ingredient_type != auto_stack_card.card_data.ingredient_type:
 				# reject top of stack cards where a child has a different ingredient type
 				is_auto_stackable = false
 				break

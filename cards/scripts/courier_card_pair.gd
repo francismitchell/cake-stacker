@@ -20,7 +20,6 @@ func _ready() -> void:
 func _on_destination_card_released() -> void:
 	if destination_card.card_above == null:
 		Card.join(courier_card.get_bottom_card(), destination_card)
-		destination_card.reposition_cards()
 
 
 func _on_courier_card_below_changed(card: Card) -> void:
@@ -57,10 +56,8 @@ func _move_to_destination() -> void:
 	Card.join(target, stack_head)
 	if destination_card_to_reattach:
 		Card.join(courier_card, destination_card_to_reattach)
-		destination_card_to_reattach.reposition_cards()
 	# then move this courier pair's destination card to the bottom of the stack
 	Card.join(stack_tail, card_below_target)
-	stack_head.reposition_cards()
 
 
 
