@@ -2,8 +2,8 @@
 class_name Card
 extends Area2D
 
-const CARD_SCENE = preload("res://cards/scenes/card.tscn")
-const SOURCE_CARD_SCENE = preload("res://cards/scenes/source_card.tscn")
+const CARD_SCENE_PATH: String = "res://cards/scenes/card.tscn"
+const SOURCE_CARD_SCENE_PATH = "res://cards/scenes/source_card.tscn"
 const PROCESS_TIME: float = 1.0
 const SHOP_OPEN_TIME: float = 0.5
 const MAX_AUTO_STACK_SIZE: int = 12
@@ -51,6 +51,7 @@ var card_above: Card = null:
 				queue_free()
 			elif card_data.card_type == CardData.CardType.BAKER:
 				process_baker_logic()
+		card_above_changed.emit(card_above)
 var card_below: Card = null:
 	set(value):
 		var last_card_below = card_below
@@ -58,14 +59,18 @@ var card_below: Card = null:
 		if card_below:
 			if last_card_below and card_below != last_card_below:
 				last_card_below.card_below = null
+		card_below_changed.emit(card_below)
 var baker_progress_bar_tween: Tween = null
 var cards_in_auto_stack_area: Array[Card] = []
 
 signal card_processed
+signal card_released
+signal card_above_changed
+signal card_below_changed
 
 
 static func create_baker_card() -> Card:
-	var new_baker_card: Card = CARD_SCENE.instantiate()
+	var new_baker_card: Card = load(CARD_SCENE_PATH).instantiate()
 	var card_data: CardData = CardData.new()
 	card_data.card_type = CardData.CardType.BAKER
 	new_baker_card.card_data = card_data
@@ -73,7 +78,7 @@ static func create_baker_card() -> Card:
 
 
 static func create_ingredient_card(ingredient_type: IngredientData.IngredientType) -> Card:
-	var new_ingredient_card: Card = CARD_SCENE.instantiate()
+	var new_ingredient_card: Card = load(CARD_SCENE_PATH).instantiate()
 	var ingredient_data: IngredientData = IngredientData.new()
 	ingredient_data.ingredient_type = ingredient_type
 	new_ingredient_card.card_data = ingredient_data
@@ -81,7 +86,7 @@ static func create_ingredient_card(ingredient_type: IngredientData.IngredientTyp
 
 
 static func create_source_card(ingredient_type: IngredientData.IngredientType) -> Card:
-	var new_source_card: Card = SOURCE_CARD_SCENE.instantiate()
+	var new_source_card: Card = load(SOURCE_CARD_SCENE_PATH).instantiate()
 	var ingredient_data: IngredientData = IngredientData.new()
 	ingredient_data.card_type = CardData.CardType.INGREDIENT_SOURCE
 	ingredient_data.ingredient_type = ingredient_type
@@ -197,6 +202,7 @@ func _on_input_event(_viewport: Node, event: InputEvent, _shape_idx: int) -> voi
 				card_below_this.z_index = i
 				card_below_this = card_below_this.card_below
 				i += 1
+			card_released.emit()
 
 
 # HACK sometimes undragging doesn't work as intended so this is a fail safe
