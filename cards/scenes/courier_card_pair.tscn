@@ -1,0 +1,26 @@
+[gd_scene format=3 uid="uid://shu78f7f8os0"]
+
+[ext_resource type="PackedScene" uid="uid://bc3fqoc4p5pxw" path="res://cards/scenes/card.tscn" id="1_rbllv"]
+[ext_resource type="Script" uid="uid://cyx67be5dxnrp" path="res://cards/scripts/courier_card_pair.gd" id="1_v8xj1"]
+[ext_resource type="Script" uid="uid://csbqe0bi83708" path="res://cards/scripts/ingredient_data.gd" id="3_hsiih"]
+
+[sub_resource type="Resource" id="Resource_birn2"]
+script = ExtResource("3_hsiih")
+card_type = 6
+metadata/_custom_type_script = "uid://csbqe0bi83708"
+
+[sub_resource type="Resource" id="Resource_q37he"]
+script = ExtResource("3_hsiih")
+card_type = 7
+metadata/_custom_type_script = "uid://csbqe0bi83708"
+
+[node name="CourierCardPair" type="Node2D" unique_id=430443973]
+script = ExtResource("1_v8xj1")
+
+[node name="CourierCard" parent="." unique_id=484967368 instance=ExtResource("1_rbllv")]
+card_data = SubResource("Resource_birn2")
+
+[node name="DestinationCard" parent="." unique_id=1701757032 instance=ExtResource("1_rbllv")]
+modulate = Color(1, 1, 1, 0.5019608)
+position = Vector2(0, 32)
+card_data = SubResource("Resource_q37he")

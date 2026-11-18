@@ -346,8 +346,14 @@ func baker_create_ingredient(_loop_count: int) -> void:
 	# hard coded image half sizes
 	target_position.x = clampf(target_position.x, 64.0, get_viewport().get_visible_rect().size.x - 64.0)
 	target_position.y = clampf(target_position.y, 96.0, get_viewport().get_visible_rect().size.y - 96.0)
+	# find where to autostack
+	var auto_stack_card: Card = null
+	# first pass, check if we have a courier card below the baker card
+	if card_below:
+		if card_below.card_data.card_type == CardData.CardType.COURIER:
+			auto_stack_card = card_below
 	# IMPORTANT: only ingredient source cards have an auto stack area, so we must query it
-	var auto_stack_card: Card = card_above.get_auto_stack_card(new_card)
+	if not auto_stack_card: auto_stack_card = card_above.get_auto_stack_card(new_card)
 	if auto_stack_card:
 		var child_cards: Array[Card] = auto_stack_card.get_child_cards()
 		if child_cards:
@@ -363,19 +369,6 @@ func baker_create_ingredient(_loop_count: int) -> void:
 	new_card.global_position = target_position
 	get_parent().add_child(new_card)
 	new_card.animation.play_spawn_animation(global_position)
-
-
-func _on_auto_stack_area_2d_area_entered(area: Area2D) -> void:
-	if area is not Card: return
-	# only add ingredient cards
-	if area.card_data.card_type == CardData.CardType.INGREDIENT:
-		cards_in_auto_stack_area.push_back(area)
-
-
-func _on_auto_stack_area_2d_area_exited(area: Area2D) -> void:
-	if area is not Card: return
-	if cards_in_auto_stack_area.has(area):
-		cards_in_auto_stack_area.erase(area)
 
 
 func get_auto_stack_card(card: Card) -> Card:
@@ -394,3 +387,16 @@ func get_auto_stack_card(card: Card) -> Card:
 		if is_auto_stackable:
 			return auto_stack_card
 	return null
+
+
+func _on_auto_stack_area_2d_area_entered(area: Area2D) -> void:
+	if area is not Card: return
+	# only add ingredient cards
+	if area.card_data.card_type == CardData.CardType.INGREDIENT:
+		cards_in_auto_stack_area.push_back(area)
+
+
+func _on_auto_stack_area_2d_area_exited(area: Area2D) -> void:
+	if area is not Card: return
+	if cards_in_auto_stack_area.has(area):
+		cards_in_auto_stack_area.erase(area)

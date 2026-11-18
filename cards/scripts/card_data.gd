@@ -2,7 +2,7 @@
 class_name CardData
 extends Resource
 
-enum CardType {BAKER, INGREDIENT, INGREDIENT_SOURCE, SHOP, SELL, BUY_INGREDIENT_SOURCE}
+enum CardType {BAKER, INGREDIENT, INGREDIENT_SOURCE, SHOP, SELL, BUY_INGREDIENT_SOURCE, COURIER, DESTINATION}
 
 static var num_bakers: int = 0
 

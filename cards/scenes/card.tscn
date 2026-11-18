@@ -44,6 +44,7 @@ script = ExtResource("3_032ga")
 
 [node name="SubViewport" type="SubViewport" parent="." unique_id=39141999]
 size = Vector2i(128, 192)
+render_target_update_mode = 1
 
 [node name="PanelContainer" parent="SubViewport" unique_id=1840125192 instance=ExtResource("1_kikvd")]
 texture = ExtResource("4_ixyhn")
