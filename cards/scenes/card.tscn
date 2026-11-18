@@ -3,6 +3,7 @@
 [ext_resource type="PackedScene" uid="uid://bcxuomucc1wt7" path="res://cards/scenes/card_control.tscn" id="1_kikvd"]
 [ext_resource type="Script" uid="uid://ccowodygcw3ba" path="res://cards/scripts/card.gd" id="1_nwofj"]
 [ext_resource type="Script" uid="uid://csbqe0bi83708" path="res://cards/scripts/ingredient_data.gd" id="2_4k7q8"]
+[ext_resource type="Script" uid="uid://dsqd21a80f46x" path="res://cards/scripts/card_animation.gd" id="3_032ga"]
 [ext_resource type="Texture2D" uid="uid://coxx7khwv5qpo" path="res://cards/images/missing_tex.png" id="4_ixyhn"]
 
 [sub_resource type="Resource" id="Resource_dvc08"]
@@ -35,6 +36,12 @@ border_color = Color(0.3032328, 0.30323288, 0.30323264, 1)
 [node name="Card" type="Area2D" unique_id=484967368]
 script = ExtResource("1_nwofj")
 card_data = SubResource("Resource_dvc08")
+processable = null
+
+[node name="Animation" type="Node" parent="." unique_id=770371501]
+script = ExtResource("3_032ga")
+
+[node name="Sound" type="Node" parent="." unique_id=1390843518]
 
 [node name="SubViewport" type="SubViewport" parent="." unique_id=39141999]
 size = Vector2i(128, 192)

@@ -90,6 +90,7 @@ static func create_source_card(ingredient_type: IngredientData.IngredientType) -
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	initialise_card_visuals()
+	visibility_changed.connect(func(): processable = true if is_visible_in_tree() else false)
 
 
 func initialise_card_visuals() -> void:
@@ -133,6 +134,7 @@ func _on_input_event(_viewport: Node, event: InputEvent, _shape_idx: int) -> voi
 	if event is InputEventMouseButton:
 		if event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 			if not draggable: return
+			$Animation.basic_squeeze()
 			is_dragging = true
 			# ensure dragged card is always at the top of the canvas
 			z_index = 99
