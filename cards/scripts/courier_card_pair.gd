@@ -19,7 +19,7 @@ func _ready() -> void:
 
 func _on_destination_card_released() -> void:
 	if destination_card.card_above == null:
-		Card.join(courier_card, destination_card)
+		Card.join(courier_card.get_bottom_card(), destination_card)
 		destination_card.reposition_cards()
 
 
