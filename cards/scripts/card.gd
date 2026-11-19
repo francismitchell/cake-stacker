@@ -6,6 +6,7 @@ const CARD_SCENE_PATH: String = "res://cards/scenes/card.tscn"
 const SOURCE_CARD_SCENE_PATH = "res://cards/scenes/source_card.tscn"
 const PROCESS_TIME: float = 1.0
 const SHOP_OPEN_TIME: float = 0.5
+const SELL_TIME: float = 0.25
 const MAX_AUTO_STACK_SIZE: int = 12
 const STACK_SPACING: Vector2 = Vector2(0.0, 32.0)
 const DRAGGING_Z_INDEX: int = 1000
@@ -122,7 +123,8 @@ func _ready() -> void:
 			if card_below: card_below.detach())
 	card_above_changed.connect(_on_card_above_changed)
 	card_below_changed.connect(_on_card_below_changed)
-	SignalBus.shop_visibility_changed.connect(_on_shop_visibility_changed)
+	if not Engine.is_editor_hint():
+		SignalBus.shop_visibility_changed.connect(_on_shop_visibility_changed)
 
 
 func _exit_tree() -> void:
@@ -145,14 +147,21 @@ func _on_card_above_changed(_card: Card) -> void:
 func _on_card_below_changed(_card: Card) -> void:
 	if card_below:
 		# handle sell logic
+		# selling should only get rid of the card at the top of the stack, not the whole stack
 		if card_data.card_type == CardData.CardType.SELL:
-			for child_card: Card in get_child_cards():
-					if child_card.card_data.card_type == CardData.CardType.BAKER and CardData.num_bakers <= 1: continue
-					SignalBus.card_sold.emit(child_card.card_data)
-					child_card.queue_free()
-			if card_data.card_type == CardData.CardType.BAKER and CardData.num_bakers <= 1: return
-			SignalBus.card_sold.emit(card_data)
-			card_below.queue_free()
+			if SignalBus.shop_open: return
+			if card_below.card_data.card_type == CardData.CardType.BAKER and CardData.num_bakers <= 1: return
+			var two_below: Card = card_below.card_below
+			$BakerProgressBar.show()
+			baker_progress_bar_tween = create_tween()
+			baker_progress_bar_tween.tween_property($BakerProgressBar, "value", 100.0, SELL_TIME).from(0.0)
+			baker_progress_bar_tween.finished.connect(card_below.queue_free)
+			baker_progress_bar_tween.finished.connect($BakerProgressBar.hide)
+			baker_progress_bar_tween.finished.connect(func():
+				if card_below: card_below.detach()
+				if two_below:
+					Card.join(self, two_below))
+			baker_progress_bar_tween.finished.connect(SignalBus.card_sold.emit.bind(card_below.card_data))
 
 
 func initialise_card_visuals() -> void:
@@ -179,6 +188,12 @@ func initialise_card_visuals() -> void:
 		card_label.text = "Sell/bin"
 		draggable = false
 	elif card_data.card_type == CardData.CardType.BUY_INGREDIENT_SOURCE:
+		draggable = false
+	elif card_data.card_type == CardData.CardType.BUY_BAKER_CARD:
+		card_texture.texture = preload("res://cards/images/baker.jpg")
+		draggable = false
+	elif card_data.card_type == CardData.CardType.BUY_COURIER_PAIR:
+		card_texture.texture = preload("res://cards/images/missing_tex.png")
 		draggable = false
 	# important to ensure that viewport renders this frame
 	$SubViewport.render_target_update_mode = SubViewport.UPDATE_ONCE
@@ -279,7 +294,9 @@ func place_at(new_global_position: Vector2, animate: bool) -> void:
 
 
 func _is_shop_layer() -> bool:
-	return on_shop_layer or card_data.card_type == CardData.CardType.BUY_INGREDIENT_SOURCE
+	return on_shop_layer or card_data.card_type == CardData.CardType.BUY_INGREDIENT_SOURCE \
+		or card_data.card_type == CardData.CardType.BUY_BAKER_CARD \
+		or card_data.card_type == CardData.CardType.BUY_COURIER_PAIR
 
 
 func is_hidden_under_shop() -> bool:
