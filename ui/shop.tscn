@@ -49,6 +49,16 @@ script = ExtResource("4_e4u7y")
 card_type = 8
 metadata/_custom_type_script = "uid://8yc6urmskxx0"
 
+[sub_resource type="Resource" id="Resource_i5mka"]
+script = ExtResource("4_e4u7y")
+card_type = 9
+metadata/_custom_type_script = "uid://8yc6urmskxx0"
+
+[sub_resource type="Resource" id="Resource_tyvbe"]
+script = ExtResource("4_e4u7y")
+card_type = 9
+metadata/_custom_type_script = "uid://8yc6urmskxx0"
+
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_1slnd"]
 
 [node name="Shop" type="Control" unique_id=497939941]
@@ -189,6 +199,12 @@ mouse_filter = 2
 [node name="CourierCardPair" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer2/Courier" unique_id=430443973 instance=ExtResource("5_t603m")]
 position = Vector2(64, 98)
 
+[node name="CourierCard" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer2/Courier/CourierCardPair" index="0" unique_id=484967368]
+card_data = SubResource("Resource_i5mka")
+
+[node name="DestinationCard" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer2/Courier/CourierCardPair" index="1" unique_id=1701757032]
+card_data = SubResource("Resource_tyvbe")
+
 [node name="CloseButton" type="Button" parent="MarginContainer/PanelContainer/MarginContainer" unique_id=916830427]
 visible = false
 layout_mode = 2
@@ -205,3 +221,5 @@ collision_mask = 0
 shape = SubResource("RectangleShape2D_1slnd")
 
 [connection signal="pressed" from="MarginContainer/PanelContainer/MarginContainer/CloseButton" to="." method="_on_close_button_pressed"]
+
+[editable path="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer2/Courier/CourierCardPair"]
