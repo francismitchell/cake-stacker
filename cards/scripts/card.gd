@@ -125,6 +125,8 @@ func _ready() -> void:
 	card_below_changed.connect(_on_card_below_changed)
 	if not Engine.is_editor_hint():
 		SignalBus.shop_visibility_changed.connect(_on_shop_visibility_changed)
+	if card_data and card_data.card_type == CardData.CardType.BAKER:
+		add_to_group("bakers")
 
 
 func _exit_tree() -> void:
@@ -150,7 +152,8 @@ func _on_card_below_changed(_card: Card) -> void:
 		# selling should only get rid of the card at the top of the stack, not the whole stack
 		if card_data.card_type == CardData.CardType.SELL:
 			if SignalBus.shop_open: return
-			if card_below.card_data.card_type == CardData.CardType.BAKER and CardData.num_bakers <= 1: return
+			if card_below.card_data.card_type == CardData.CardType.BAKER \
+				and get_tree().get_nodes_in_group("bakers").size() <= 1: return
 			var two_below: Card = card_below.card_below
 			$BakerProgressBar.show()
 			baker_progress_bar_tween = create_tween()
