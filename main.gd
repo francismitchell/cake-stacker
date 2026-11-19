@@ -17,6 +17,8 @@ func _ready() -> void:
 	get_viewport().set_physics_object_picking_first_only(true)
 	SignalBus.open_shop_card_processed.connect(_on_open_shop_card_processed)
 	SignalBus.source_card_purchased.connect(_on_source_card_purchased)
+	SignalBus.baker_card_purchased.connect(_on_baker_card_purchased)
+	SignalBus.courier_pair_purchased.connect(_on_courier_pair_purchased)
 	SignalBus.card_sold.connect(_on_card_sold)
 	run_tutorial()
 
@@ -32,6 +34,24 @@ func _on_source_card_purchased(ingredient_type: IngredientData.IngredientType, f
 	# hard coded image half sizes
 	create_tween().tween_property(new_card, "global_position", target_position, 0.5).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 	$Cards.add_child(new_card)
+	$Shop.hide()
+
+
+func _on_baker_card_purchased(from_global_position: Vector2) -> void:
+	var new_card: Card = Card.create_baker_card()
+	new_card.global_position = from_global_position
+	var target_position = from_global_position + Vector2(0.0, 196.0).rotated(randf() * TAU)
+	create_tween().tween_property(new_card, "global_position", target_position, 0.5).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	$Cards.add_child(new_card)
+	$Shop.hide()
+
+
+func _on_courier_pair_purchased(from_global_position: Vector2) -> void:
+	var courier_pair: Node2D = Card.create_courier_pair()
+	courier_pair.global_position = from_global_position
+	var target_position = from_global_position + Vector2(0.0, 196.0).rotated(randf() * TAU)
+	create_tween().tween_property(courier_pair, "global_position", target_position, 0.5).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	$Couriers.add_child(courier_pair)
 	$Shop.hide()
 
 

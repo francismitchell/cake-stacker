@@ -3,7 +3,8 @@ class_name Card
 extends Area2D
 
 const CARD_SCENE_PATH: String = "res://cards/scenes/card.tscn"
-const SOURCE_CARD_SCENE_PATH = "res://cards/scenes/source_card.tscn"
+const SOURCE_CARD_SCENE_PATH: String = "res://cards/scenes/source_card.tscn"
+const COURIER_PAIR_SCENE_PATH: String = "res://cards/scenes/courier_card_pair.tscn"
 const PROCESS_TIME: float = 1.0
 const SHOP_OPEN_TIME: float = 0.5
 const SELL_TIME: float = 0.25
@@ -110,6 +111,11 @@ static func create_source_card(ingredient_type: IngredientData.IngredientType) -
 	ingredient_data.ingredient_type = ingredient_type
 	new_source_card.card_data = ingredient_data
 	return new_source_card
+
+
+static func create_courier_pair() -> Node2D:
+	var new_courier_pair: Node2D = load(COURIER_PAIR_SCENE_PATH).instantiate()
+	return new_courier_pair
 
 
 # Called when the node enters the scene tree for the first time.
@@ -364,6 +370,20 @@ func process_baker_logic() -> void:
 		baker_progress_bar_tween = create_tween()
 		baker_progress_bar_tween.tween_property($BakerProgressBar, "value", 100.0, SHOP_OPEN_TIME).from(0.0)
 		baker_progress_bar_tween.finished.connect(SignalBus.source_card_purchased.emit.bind(card_above.card_data.ingredient_type, global_position))
+		baker_progress_bar_tween.finished.connect($BakerProgressBar.hide)
+	elif card_above.card_data.card_type == CardData.CardType.BUY_BAKER_CARD:
+		# start buying card
+		$BakerProgressBar.show()
+		baker_progress_bar_tween = create_tween()
+		baker_progress_bar_tween.tween_property($BakerProgressBar, "value", 100.0, SHOP_OPEN_TIME).from(0.0)
+		baker_progress_bar_tween.finished.connect(SignalBus.baker_card_purchased.emit.bind(global_position))
+		baker_progress_bar_tween.finished.connect($BakerProgressBar.hide)
+	elif card_above.card_data.card_type == CardData.CardType.BUY_COURIER_PAIR:
+		# start buying card
+		$BakerProgressBar.show()
+		baker_progress_bar_tween = create_tween()
+		baker_progress_bar_tween.tween_property($BakerProgressBar, "value", 100.0, SHOP_OPEN_TIME).from(0.0)
+		baker_progress_bar_tween.finished.connect(SignalBus.courier_pair_purchased.emit.bind(global_position))
 		baker_progress_bar_tween.finished.connect($BakerProgressBar.hide)
 
 

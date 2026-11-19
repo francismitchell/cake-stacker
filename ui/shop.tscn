@@ -200,9 +200,11 @@ mouse_filter = 2
 position = Vector2(64, 98)
 
 [node name="CourierCard" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer2/Courier/CourierCardPair" index="0" unique_id=484967368]
+z_index = 501
 card_data = SubResource("Resource_i5mka")
 
 [node name="DestinationCard" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer2/Courier/CourierCardPair" index="1" unique_id=1701757032]
+z_index = 501
 card_data = SubResource("Resource_tyvbe")
 
 [node name="CloseButton" type="Button" parent="MarginContainer/PanelContainer/MarginContainer" unique_id=916830427]
@@ -214,7 +216,7 @@ text = "CLOSE"
 
 [node name="ClickBlockerArea2D" type="Area2D" parent="." unique_id=1114535282]
 z_as_relative = false
-collision_layer = 0
+collision_layer = 2
 collision_mask = 0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="ClickBlockerArea2D" unique_id=1558955893]
