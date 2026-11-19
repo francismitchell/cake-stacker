@@ -233,6 +233,8 @@ func _input(event: InputEvent) -> void:
 
 func _drop() -> void:
 	is_dragging = false
+	# check if shop should close
+	if SignalBus.shop_open and not SignalBus.is_point_in_shop_panel(global_position): SignalBus.open_shop_card_processed.emit()
 	# check if dropped on a card or stack
 	if not cards_in_area.is_empty():
 		# find first card with nothing below it
