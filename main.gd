@@ -1,5 +1,7 @@
 extends ColorRect
 
+const SHOP_PANEL_Z_INDEX: int = 500
+
 var money: int = 0:
 	set(value):
 		money = value
@@ -8,13 +10,19 @@ var money: int = 0:
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+	$Shop.z_index = SHOP_PANEL_Z_INDEX
+	$Shop/ClickBlockerArea2D.z_index = SHOP_PANEL_Z_INDEX
 	# setup proper object picking for cards
 	get_viewport().set_physics_object_picking_sort(true)
 	get_viewport().set_physics_object_picking_first_only(true)
-	SignalBus.open_shop_card_processed.connect(func(): $Shop.visible = not $Shop.visible)
+	SignalBus.open_shop_card_processed.connect(_on_open_shop_card_processed)
 	SignalBus.source_card_purchased.connect(_on_source_card_purchased)
 	SignalBus.card_sold.connect(_on_card_sold)
 	run_tutorial()
+
+
+func _on_open_shop_card_processed() -> void:
+	$Shop.visible = not $Shop.visible
 
 
 func _on_source_card_purchased(ingredient_type: IngredientData.IngredientType, from_global_position: Vector2) -> void:
@@ -36,8 +44,8 @@ func _on_card_sold(card_data: CardData) -> void:
 
 
 func run_tutorial() -> void:
-	$Cards/ShopCard.hide()
-	$Cards/SellCard.hide()
+	#$Cards/ShopCard.hide()
+	#$Cards/SellCard.hide()
 	$MarginContainer/MoneyLabel.hide()
 	# spawn in a baker card and a flour source card
 	var baker: Card = Card.create_baker_card()

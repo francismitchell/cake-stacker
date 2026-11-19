@@ -68,18 +68,18 @@ const ingredient_texture_dict: Dictionary[IngredientType, Texture2D] = {
 	IngredientType.BASIC_SPONGE: preload("res://cards/images/cooked sponge.jpg"),
 	IngredientType.VICTORIA_SPONGE: preload("res://cards/images/missing_tex.png"),
 	IngredientType.CAKE: preload("res://cards/images/cake.jpg"),
-	IngredientType.BUTTERCREAM: preload("res://cards/images/missing_tex.png"),
+	IngredientType.BUTTERCREAM: preload("res://cards/images/buttercream.jpg"),
 	IngredientType.GENOISE: preload("res://cards/images/missing_tex.png"),
 	IngredientType.SWISS_ROLL: preload("res://cards/images/missing_tex.png"),
 	IngredientType.COCOA_POWDER: preload("res://cards/images/missing_tex.png"),
-	IngredientType.CARROT: preload("res://cards/images/missing_tex.png"),
+	IngredientType.CARROT: preload("res://cards/images/carrot.jpg"),
 	IngredientType.CREAM_CHEESE: preload("res://cards/images/missing_tex.png"),
-	IngredientType.CREAM_CHEESE_FROSTING: preload("res://cards/images/missing_tex.png"),
+	IngredientType.CREAM_CHEESE_FROSTING: preload("res://cards/images/cream_cheese_icing.jpg"),
 	IngredientType.CARROT_SPONGE: preload("res://cards/images/carrot_sponge.jpg"),
 	IngredientType.CARROT_CAKE: preload("res://cards/images/carrot_cake.jpg"),
 	IngredientType.DOUBLE_CARROT_SPONGE: preload("res://cards/images/double_carrot_sponge.jpg"),
 	IngredientType.CHOCOLATE_SPONGE: preload("res://cards/images/missing_tex.png"),
-	IngredientType.CHOCOLATE_BUTTERCREAM: preload("res://cards/images/missing_tex.png"),
+	IngredientType.CHOCOLATE_BUTTERCREAM: preload("res://cards/images/chocolate_buttercream.jpg"),
 	IngredientType.CHOCOLATE_CAKE: preload("res://cards/images/missing_tex.png")
 }
 const ingredient_source_texture_dict: Dictionary[IngredientType, Texture2D] = {

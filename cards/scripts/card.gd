@@ -8,7 +8,9 @@ const PROCESS_TIME: float = 1.0
 const SHOP_OPEN_TIME: float = 0.5
 const MAX_AUTO_STACK_SIZE: int = 12
 const STACK_SPACING: Vector2 = Vector2(0.0, 32.0)
-const DRAGGING_Z_INDEX: int = 500
+const DRAGGING_Z_INDEX: int = 1000
+const SHOP_CARD_Z_INDEX: int = 501
+const SHOP_OPEN_Z_INDEX: int = 500
 
 @export var card_data: CardData:
 	set(value):
@@ -45,6 +47,7 @@ var _card_above: Card = null
 var _card_below: Card = null
 var baker_progress_bar_tween: Tween = null
 var cards_in_auto_stack_area: Array[Card] = []
+var on_shop_layer: bool = false
 
 signal card_processed
 signal card_released
@@ -110,6 +113,7 @@ static func create_source_card(ingredient_type: IngredientData.IngredientType) -
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+	reassign_z_indices()
 	initialise_card_visuals()
 	visibility_changed.connect(func(): processable = true if is_visible_in_tree() else false)
 	visibility_changed.connect(func(): 
@@ -118,11 +122,18 @@ func _ready() -> void:
 			if card_below: card_below.detach())
 	card_above_changed.connect(_on_card_above_changed)
 	card_below_changed.connect(_on_card_below_changed)
+	SignalBus.shop_visibility_changed.connect(_on_shop_visibility_changed)
 
 
 func _exit_tree() -> void:
 	# make sure to detach cards when selling/deleting cards so that we don't have broken references
 	detach()
+
+
+func _on_shop_visibility_changed(open: bool) -> void:
+	if not open and on_shop_layer:
+		on_shop_layer = false
+		reassign_z_indices()
 
 
 func _on_card_above_changed(_card: Card) -> void:
@@ -167,6 +178,8 @@ func initialise_card_visuals() -> void:
 	elif card_data.card_type == CardData.CardType.SELL:
 		card_label.text = "Sell/bin"
 		draggable = false
+	elif card_data.card_type == CardData.CardType.BUY_INGREDIENT_SOURCE:
+		draggable = false
 	# important to ensure that viewport renders this frame
 	$SubViewport.render_target_update_mode = SubViewport.UPDATE_ONCE
 
@@ -185,6 +198,8 @@ func _on_input_event(_viewport: Node, event: InputEvent, _shape_idx: int) -> voi
 		if event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 			if not draggable: return
 			animation.basic_squeeze()
+			# set this before z index changed in is_dragging setter
+			on_shop_layer = SignalBus.shop_open
 			is_dragging = true
 			# store mouse position offset so that cards drag from selected pixel
 			mouse_position_offset = get_global_mouse_position() - global_position
@@ -204,7 +219,7 @@ func _drop() -> void:
 	if not cards_in_area.is_empty():
 		# find first card with nothing below it
 		for card: Card in cards_in_area:
-			if card.card_below == null and card.is_visible_in_tree() and card not in get_child_cards():
+			if card.card_below == null and card.is_visible_in_tree() and card not in get_child_cards() and not card.is_hidden_under_shop():
 				Card.join(card, self)
 				break
 			# if dropped onto card that is already above it, reset position of this card and its children
@@ -263,13 +278,22 @@ func place_at(new_global_position: Vector2, animate: bool) -> void:
 	animation.slide_to(new_global_position)
 
 
+func _is_shop_layer() -> bool:
+	return on_shop_layer or card_data.card_type == CardData.CardType.BUY_INGREDIENT_SOURCE
+
+
+func is_hidden_under_shop() -> bool:
+	return not get_top_card()._is_shop_layer() and SignalBus.is_point_in_shop_panel(global_position)
+
+
 func reassign_z_indices() -> void:
 	var card: Card = get_top_card()
+	var z_index_base: int = SHOP_CARD_Z_INDEX if card._is_shop_layer() else 0
 	var i: int = 0
 	var lifted: bool = false
 	while card:
 		lifted = lifted or card.is_dragging
-		card.z_index = i + (DRAGGING_Z_INDEX if lifted else 0)
+		card.z_index = z_index_base + i + (DRAGGING_Z_INDEX if lifted else 0)
 		card = card.card_below
 		i += 1
 
@@ -383,15 +407,18 @@ func baker_create_ingredient(_loop_count: int) -> void:
 
 func get_auto_stack_card(card: Card) -> Card:
 	for auto_stack_card: Card in cards_in_auto_stack_area:
+		if auto_stack_card.is_hidden_under_shop(): continue
 		var is_auto_stackable: bool = true
-		# reject cards not at the top of the stack
+		# reject cards not at the bottom of the stack
 		if auto_stack_card.card_above != null: continue
-		# reject top of stack cards of different ingredient types
+		# reject bottom of stack cards being dragged
+		if auto_stack_card.is_dragging: continue
+		# reject bottom of stack cards of different ingredient types
 		if auto_stack_card.card_data.ingredient_type != card.card_data.ingredient_type: continue
 		var child_cards: Array[Card] = auto_stack_card.get_child_cards()
 		for child_card: Card in child_cards:
 			if child_card.card_data.card_type != CardData.CardType.INGREDIENT or child_card.card_data.ingredient_type != auto_stack_card.card_data.ingredient_type:
-				# reject top of stack cards where a child has a different ingredient type
+				# reject bottom of stack cards where a child has a different ingredient type
 				is_auto_stackable = false
 				break
 		if is_auto_stackable:

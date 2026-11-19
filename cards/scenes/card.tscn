@@ -34,6 +34,7 @@ border_width_bottom = 2
 border_color = Color(0.3032328, 0.30323288, 0.30323264, 1)
 
 [node name="Card" type="Area2D" unique_id=484967368]
+z_as_relative = false
 script = ExtResource("1_nwofj")
 card_data = SubResource("Resource_dvc08")
 

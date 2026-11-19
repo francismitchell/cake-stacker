@@ -4,8 +4,13 @@
 [ext_resource type="PackedScene" uid="uid://bc3fqoc4p5pxw" path="res://cards/scenes/card.tscn" id="2_1slnd"]
 [ext_resource type="Script" uid="uid://csbqe0bi83708" path="res://cards/scripts/ingredient_data.gd" id="3_e4u7y"]
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1slnd"]
+bg_color = Color(0.86, 0.8327667, 0.774, 1)
+
 [sub_resource type="LabelSettings" id="LabelSettings_vf1vs"]
 font_size = 64
+outline_size = 4
+outline_color = Color(0, 0, 0, 1)
 
 [sub_resource type="Resource" id="Resource_t603m"]
 script = ExtResource("3_e4u7y")
@@ -37,6 +42,8 @@ ingredient_type = 16
 card_type = 5
 metadata/_custom_type_script = "uid://csbqe0bi83708"
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_1slnd"]
+
 [node name="Shop" type="Control" unique_id=497939941]
 layout_mode = 3
 anchors_preset = 15
@@ -62,6 +69,7 @@ theme_override_constants/margin_bottom = 256
 [node name="PanelContainer" type="PanelContainer" parent="MarginContainer" unique_id=1850597657]
 layout_mode = 2
 mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_1slnd")
 
 [node name="MarginContainer" type="MarginContainer" parent="MarginContainer/PanelContainer" unique_id=67118042]
 layout_mode = 2
@@ -76,8 +84,9 @@ theme_override_constants/separation = 64
 alignment = 1
 
 [node name="Label" type="Label" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer" unique_id=771848494]
+visible = false
 layout_mode = 2
-text = "SHOP"
+text = "Buy more ingredients"
 label_settings = SubResource("LabelSettings_vf1vs")
 horizontal_alignment = 1
 
@@ -96,7 +105,6 @@ mouse_filter = 2
 [node name="Card" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/Butter" unique_id=484967368 instance=ExtResource("2_1slnd")]
 position = Vector2(64, 98)
 card_data = SubResource("Resource_t603m")
-processable = true
 
 [node name="Strawberry" type="Control" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer" unique_id=964418862]
 custom_minimum_size = Vector2(128, 196)
@@ -108,7 +116,6 @@ mouse_filter = 2
 [node name="Card" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/Strawberry" unique_id=1324911956 instance=ExtResource("2_1slnd")]
 position = Vector2(64, 98)
 card_data = SubResource("Resource_1slnd")
-processable = false
 
 [node name="Cocoa" type="Control" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer" unique_id=789040014]
 custom_minimum_size = Vector2(128, 196)
@@ -120,7 +127,6 @@ mouse_filter = 2
 [node name="Card" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/Cocoa" unique_id=530948243 instance=ExtResource("2_1slnd")]
 position = Vector2(64, 98)
 card_data = SubResource("Resource_e4u7y")
-processable = true
 
 [node name="Carrot" type="Control" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer" unique_id=915727077]
 custom_minimum_size = Vector2(128, 196)
@@ -132,7 +138,6 @@ mouse_filter = 2
 [node name="Card" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/Carrot" unique_id=887246111 instance=ExtResource("2_1slnd")]
 position = Vector2(64, 98)
 card_data = SubResource("Resource_67uj7")
-processable = true
 
 [node name="CreamCheese" type="Control" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer" unique_id=1308060415]
 custom_minimum_size = Vector2(128, 196)
@@ -144,12 +149,20 @@ mouse_filter = 2
 [node name="Card" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/CreamCheese" unique_id=1246261061 instance=ExtResource("2_1slnd")]
 position = Vector2(64, 98)
 card_data = SubResource("Resource_qxnrq")
-processable = true
 
 [node name="CloseButton" type="Button" parent="MarginContainer/PanelContainer/MarginContainer" unique_id=916830427]
+visible = false
 layout_mode = 2
 size_flags_horizontal = 8
 size_flags_vertical = 0
 text = "CLOSE"
+
+[node name="ClickBlockerArea2D" type="Area2D" parent="." unique_id=1114535282]
+z_as_relative = false
+collision_layer = 0
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ClickBlockerArea2D" unique_id=1558955893]
+shape = SubResource("RectangleShape2D_1slnd")
 
 [connection signal="pressed" from="MarginContainer/PanelContainer/MarginContainer/CloseButton" to="." method="_on_close_button_pressed"]
