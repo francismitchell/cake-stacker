@@ -20,8 +20,10 @@ script = ExtResource("1_v8xj1")
 
 [node name="CourierCard" parent="." unique_id=484967368 instance=ExtResource("1_rbllv")]
 card_data = SubResource("Resource_t603m")
+processable = false
 
 [node name="DestinationCard" parent="." unique_id=1701757032 instance=ExtResource("1_rbllv")]
 modulate = Color(1, 1, 1, 0.5019608)
 position = Vector2(0, 32)
 card_data = SubResource("Resource_yul2t")
+processable = false

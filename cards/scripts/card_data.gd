@@ -10,3 +10,4 @@ var card_name: String = ""
 		card_type = value
 		emit_changed()
 var card_sell_price: int = 0
+@export var processable_by_baker: bool = true

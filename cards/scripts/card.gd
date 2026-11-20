@@ -104,6 +104,7 @@ static func create_baker_card() -> Card:
 	var new_baker_card: Card = load(CARD_SCENE_PATH).instantiate()
 	var baker_card_data: CardData = CardData.new()
 	baker_card_data.card_type = CardData.CardType.BAKER
+	baker_card_data.processable_by_baker = false
 	new_baker_card.card_data = baker_card_data
 	return new_baker_card
 
@@ -121,6 +122,7 @@ static func create_source_card(ingredient_type: IngredientData.IngredientType) -
 	var ingredient_data: IngredientData = IngredientData.new()
 	ingredient_data.card_type = CardData.CardType.INGREDIENT_SOURCE
 	ingredient_data.ingredient_type = ingredient_type
+	ingredient_data.processable_by_baker = false
 	new_source_card.card_data = ingredient_data
 	return new_source_card
 
@@ -134,6 +136,7 @@ static func create_cake_stand_card() -> Card:
 	var new_cake_stand_card: Card = load(CARD_SCENE_PATH).instantiate()
 	var cake_stand_card_data: CardData = CardData.new()
 	cake_stand_card_data.card_type = CardData.CardType.CAKE_STAND
+	cake_stand_card_data.processable_by_baker = false
 	new_cake_stand_card.card_data = cake_stand_card_data
 	return new_cake_stand_card
 
@@ -436,8 +439,7 @@ func process_baker_logic() -> void:
 	elif card_above.card_data.card_type == CardData.CardType.DESTINATION:
 		# ignore destination cards and start processing the next ingredient card below them
 		var card: Card = card_above
-		while card and (card.card_data.card_type == CardData.CardType.DESTINATION \
-			or card.card_data.card_type == CardData.CardType.CAKE_STAND):
+		while card and not card.card_data.processable_by_baker:
 			card = card.card_above
 		if not card: return
 		# start cooking
@@ -483,8 +485,7 @@ func baker_process_ingredients() -> void:
 	# because the stack composition might have changed since the initial check in process_baker_logic()
 	# we want to check again for the bottom most non-destination card
 	var card: Card = card_above
-	while card and (card.card_data.card_type == CardData.CardType.DESTINATION \
-			or card.card_data.card_type == CardData.CardType.CAKE_STAND):
+	while card and not card.card_data.processable_by_baker:
 		card = card.card_above
 	var cards_to_process: Array[Card] = []
 	while card:
