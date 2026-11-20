@@ -17,6 +17,8 @@ var _destination_card_position: Vector2 = Vector2.ZERO
 func _ready() -> void:
 	destination_card.card_released.connect(_on_destination_card_released)
 	courier_card.card_below_changed.connect(_on_courier_card_below_changed)
+	destination_card.z_index_changed.connect(func(): z_index = destination_card.get_bottom_card().z_index + 1)
+	courier_card.z_index_changed.connect(func(): z_index = courier_card.get_bottom_card().z_index + 1)
 	# link the two cards
 	Card.join(courier_card, destination_card)
 
