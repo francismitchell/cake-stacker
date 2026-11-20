@@ -112,7 +112,13 @@ static func create_baker_card() -> Card:
 static func create_ingredient_card(ingredient_type: IngredientData.IngredientType) -> Card:
 	var new_ingredient_card: Card = load(CARD_SCENE_PATH).instantiate()
 	var ingredient_data: IngredientData = IngredientData.new()
-	ingredient_data.ingredient_quality = IngredientData.IngredientQuality.NONE
+	if ingredient_type in IngredientData.final_ingredients:
+		if randi() % 100 == 0:
+			ingredient_data.ingredient_quality = IngredientData.IngredientQuality.PLATINUM
+		elif randi() % 10 == 0:
+			ingredient_data.ingredient_quality = IngredientData.IngredientQuality.GOLD
+		else:
+			ingredient_data.ingredient_quality = IngredientData.IngredientQuality.SILVER
 	ingredient_data.ingredient_type = ingredient_type
 	new_ingredient_card.card_data = ingredient_data
 	return new_ingredient_card

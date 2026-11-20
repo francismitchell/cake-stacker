@@ -69,7 +69,12 @@ func _on_card_sold(card_data: CardData) -> void:
 	var sell_amount: int = 0
 	if card_data is IngredientData:
 		if IngredientData.ingredient_sell_price.has(card_data.ingredient_type):
-			sell_amount = IngredientData.ingredient_sell_price[card_data.ingredient_type]
+			var multiplier: float = 1.0
+			if card_data.ingredient_quality == IngredientData.IngredientQuality.PLATINUM:
+				multiplier = 2.0
+			elif card_data.ingredient_quality == IngredientData.IngredientQuality.GOLD:
+				multiplier = 1.5
+			sell_amount = multiplier * IngredientData.ingredient_sell_price[card_data.ingredient_type]
 	SignalBus.money += sell_amount
 	money = SignalBus.money
 
@@ -78,6 +83,7 @@ func run_tutorial() -> void:
 	$Cards/ShopCard.hide()
 	$Cards/SellCard.hide()
 	$MarginContainer/MoneyLabel.hide()
+	add_card(Card.create_ingredient_card(IngredientData.IngredientType.CARROT_CAKE), get_viewport().get_visible_rect().size / 2.0 + Vector2(randf_range(-500.0, 500.0), randf_range(-500.0, 500.0)))
 	# spawn in a baker card and a flour source card
 	var baker: Card = Card.create_baker_card()
 	baker.global_position = get_viewport().get_visible_rect().size / 2.0 + Vector2(randf_range(-500.0, 500.0), randf_range(-500.0, 500.0))
