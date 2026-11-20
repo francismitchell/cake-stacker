@@ -4,6 +4,13 @@ extends Resource
 
 enum CardType {BAKER, INGREDIENT, INGREDIENT_SOURCE, SHOP, SELL, BUY_INGREDIENT_SOURCE, COURIER, DESTINATION, BUY_BAKER_CARD, BUY_COURIER_PAIR, CAKE_STAND, BUY_CAKE_STAND}
 
+const card_buy_price: Dictionary[CardType, int] = {
+	CardType.BUY_INGREDIENT_SOURCE: 0,
+	CardType.BUY_BAKER_CARD: 100,
+	CardType.BUY_COURIER_PAIR: 100,
+	CardType.BUY_CAKE_STAND: 10
+}
+
 var card_name: String = ""
 @export var card_type: CardType = CardType.INGREDIENT:
 	set(value):

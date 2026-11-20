@@ -12,14 +12,14 @@ func _ready() -> void:
 	visibility_changed.connect(SignalBus.shop_visibility_changed.emit.bind(visible))
 	await SignalBus.await_ingredient_sold(IngredientData.IngredientType.SWISS_ROLL)
 	# unlock strawberry
-	$MarginContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/Butter/Card.processable = true
+	#$MarginContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/Butter/Card.processable = true
 	await SignalBus.await_ingredient_sold(IngredientData.IngredientType.CAKE)
 	# unlock cocoa
-	$MarginContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/Cocoa/Card.processable = true
+	#$MarginContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/Cocoa/Card.processable = true
 	await SignalBus.await_ingredient_sold(IngredientData.IngredientType.CHOCOLATE_CAKE)
 	# unlock carrot and cream cheese
-	$MarginContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/Carrot/Card.processable = true
-	$MarginContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/Butter/CreamCheese.processable = true
+	#$MarginContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/Carrot/Card.processable = true
+	#$MarginContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/Butter/CreamCheese.processable = true
 	await SignalBus.await_ingredient_sold(IngredientData.IngredientType.CARROT_CAKE)
 	# unlock ???
 

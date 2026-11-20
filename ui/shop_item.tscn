@@ -1,0 +1,29 @@
+[gd_scene format=3 uid="uid://djfhsebpo8acj"]
+
+[ext_resource type="Script" uid="uid://cgeor0xffcr33" path="res://ui/shop_item.gd" id="1_x4syg"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_67uj7"]
+font_size = 36
+outline_size = 8
+outline_color = Color(0, 0, 0, 1)
+
+[node name="ShopItem" type="VBoxContainer" unique_id=1146449365]
+script = ExtResource("1_x4syg")
+
+[node name="Label" type="Label" parent="." unique_id=1674398282]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 10
+text = "£20"
+label_settings = SubResource("LabelSettings_67uj7")
+
+[node name="CardControl" type="Control" parent="." unique_id=2070481796]
+custom_minimum_size = Vector2(128, 196)
+custom_maximum_size = Vector2(128, 196)
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+
+[connection signal="area_entered" from="CardControl/Card" to="CardControl/Card" method="_on_area_entered"]
+[connection signal="area_exited" from="CardControl/Card" to="CardControl/Card" method="_on_area_exited"]
+[connection signal="input_event" from="CardControl/Card" to="CardControl/Card" method="_on_input_event"]

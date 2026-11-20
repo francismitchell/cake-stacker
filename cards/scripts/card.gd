@@ -112,6 +112,7 @@ static func create_baker_card() -> Card:
 static func create_ingredient_card(ingredient_type: IngredientData.IngredientType) -> Card:
 	var new_ingredient_card: Card = load(CARD_SCENE_PATH).instantiate()
 	var ingredient_data: IngredientData = IngredientData.new()
+	ingredient_data.ingredient_quality = IngredientData.IngredientQuality.NONE
 	ingredient_data.ingredient_type = ingredient_type
 	new_ingredient_card.card_data = ingredient_data
 	return new_ingredient_card
@@ -260,6 +261,10 @@ func initialise_card_visuals() -> void:
 	elif card_data.card_type == CardData.CardType.SELL:
 		card_label.text = "Sell/bin"
 		draggable = false
+	elif card_data.card_type == CardData.CardType.COURIER:
+		card_label.text = "Courier"
+	elif card_data.card_type == CardData.CardType.DESTINATION:
+		card_label.text = "Destination"
 	elif card_data.card_type == CardData.CardType.BUY_INGREDIENT_SOURCE:
 		draggable = false
 	elif card_data.card_type == CardData.CardType.BUY_BAKER_CARD:
@@ -272,6 +277,7 @@ func initialise_card_visuals() -> void:
 		card_texture.texture = preload("res://cards/images/missing_tex.png")
 		draggable = false
 	elif card_data.card_type == CardData.CardType.CAKE_STAND:
+		card_label.text = "Cake Stand"
 		card_texture.texture = preload("res://cards/images/missing_tex.png")
 		processable = false
 	# important to ensure that viewport renders this frame
@@ -456,6 +462,9 @@ func process_baker_logic() -> void:
 		# we also want to restart the check as it won't restart itself as the card above won't have changed
 		baker_progress_bar_tween.finished.connect(process_baker_logic)
 	elif card_above.card_data.card_type == CardData.CardType.BUY_INGREDIENT_SOURCE:
+		if SignalBus.money < CardData.card_buy_price[card_above.card_data.card_type]:
+			animation.not_enough_money()
+			return
 		# start buying card
 		$BakerProgressBar.show()
 		baker_progress_bar_tween = create_tween()
@@ -463,6 +472,9 @@ func process_baker_logic() -> void:
 		baker_progress_bar_tween.finished.connect(SignalBus.source_card_purchased.emit.bind(card_above.card_data.ingredient_type, global_position))
 		baker_progress_bar_tween.finished.connect($BakerProgressBar.hide)
 	elif card_above.card_data.card_type == CardData.CardType.BUY_BAKER_CARD:
+		if SignalBus.money < CardData.card_buy_price[card_above.card_data.card_type]:
+			animation.not_enough_money()
+			return
 		# start buying card
 		$BakerProgressBar.show()
 		baker_progress_bar_tween = create_tween()
@@ -470,6 +482,9 @@ func process_baker_logic() -> void:
 		baker_progress_bar_tween.finished.connect(SignalBus.baker_card_purchased.emit.bind(global_position))
 		baker_progress_bar_tween.finished.connect($BakerProgressBar.hide)
 	elif card_above.card_data.card_type == CardData.CardType.BUY_COURIER_PAIR:
+		if SignalBus.money < CardData.card_buy_price[card_above.card_data.card_type]:
+			animation.not_enough_money()
+			return
 		# start buying card
 		$BakerProgressBar.show()
 		baker_progress_bar_tween = create_tween()
@@ -477,6 +492,9 @@ func process_baker_logic() -> void:
 		baker_progress_bar_tween.finished.connect(SignalBus.courier_pair_purchased.emit.bind(global_position))
 		baker_progress_bar_tween.finished.connect($BakerProgressBar.hide)
 	elif card_above.card_data.card_type == CardData.CardType.BUY_CAKE_STAND:
+		if SignalBus.money < CardData.card_buy_price[card_above.card_data.card_type]:
+			animation.not_enough_money()
+			return
 		# start buying card
 		$BakerProgressBar.show()
 		baker_progress_bar_tween = create_tween()

@@ -70,7 +70,8 @@ func _on_card_sold(card_data: CardData) -> void:
 	if card_data is IngredientData:
 		if IngredientData.ingredient_sell_price.has(card_data.ingredient_type):
 			sell_amount = IngredientData.ingredient_sell_price[card_data.ingredient_type]
-	money += sell_amount
+	SignalBus.money += sell_amount
+	money = SignalBus.money
 
 
 func run_tutorial() -> void:

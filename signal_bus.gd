@@ -10,6 +10,7 @@ signal shop_visibility_changed(open: bool)
 
 var shop_open: bool = false
 var shop_panel: PanelContainer
+var money: int = 0
 
 func await_ingredient_created(ingredient: IngredientData.IngredientType) -> void:
 	var ingredient_created: IngredientData.IngredientType = IngredientData.IngredientType.NONE

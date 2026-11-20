@@ -1,3 +1,4 @@
+class_name CourierPair
 extends Node2D
 
 @onready var courier_card: Card = $CourierCard

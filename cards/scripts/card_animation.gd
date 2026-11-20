@@ -36,3 +36,7 @@ func slide_to(new_global_position: Vector2) -> void:
 		_offset_tween.kill()
 	_offset_tween = create_tween()
 	_offset_tween.tween_property(sprite, "offset", Vector2.ZERO, 0.25).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+
+
+func not_enough_money() -> void:
+	pass
