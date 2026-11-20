@@ -60,10 +60,9 @@ func _move_to_destination() -> void:
 	Card.join(stack_tail, card_below_target)
 
 
-
-
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
+	if courier_card == null or destination_card == null: return
 	if courier_card.global_position != _courier_card_position:
 		_courier_card_position = courier_card.global_position - global_position
 		queue_redraw()

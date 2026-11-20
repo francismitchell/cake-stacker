@@ -416,6 +416,20 @@ func process_baker_logic() -> void:
 		baker_progress_bar_tween.tween_property($BakerProgressBar, "value", 100.0, SHOP_OPEN_TIME).from(0.0)
 		baker_progress_bar_tween.finished.connect(SignalBus.open_shop_card_processed.emit)
 		baker_progress_bar_tween.finished.connect($BakerProgressBar.hide)
+	elif card_above.card_data.card_type == CardData.CardType.DESTINATION:
+		# ignore destination cards and start processing the next ingredient card below them
+		var card: Card = card_above
+		while card and card.card_data.card_type == CardData.CardType.DESTINATION:
+			card = card.card_above
+		if not card: return
+		# start cooking
+		$BakerProgressBar.show()
+		baker_progress_bar_tween = create_tween()
+		baker_progress_bar_tween.tween_property($BakerProgressBar, "value", 100.0, PROCESS_TIME).from(0.0)
+		baker_progress_bar_tween.finished.connect(baker_process_ingredients)
+		baker_progress_bar_tween.finished.connect($BakerProgressBar.hide)
+		# we also want to restart the check as it won't restart itself as the card above won't have changed
+		baker_progress_bar_tween.finished.connect(process_baker_logic)
 	elif card_above.card_data.card_type == CardData.CardType.BUY_INGREDIENT_SOURCE:
 		# start buying card
 		$BakerProgressBar.show()
@@ -441,27 +455,46 @@ func process_baker_logic() -> void:
 
 func baker_process_ingredients() -> void:
 	var ingredients_in: Dictionary[IngredientData.IngredientType, int] = {}
-	var card_above_this = card_above
-	var cards_above: Array[Card]
-	while card_above_this:
-		if card_above_this.card_data.card_type == CardData.CardType.INGREDIENT:
-			cards_above.push_back(card_above_this)
-			if ingredients_in.has(card_above_this.card_data.ingredient_type):
-				ingredients_in[card_above_this.card_data.ingredient_type] += 1
-			else:
-				ingredients_in[card_above_this.card_data.ingredient_type] = 1
-		card_above_this = card_above_this.card_above
-	var new_card: Card = create_ingredient_card(RecipeManager.process_ingredients(ingredients_in))
+	# because the stack composition might have changed since the initial check in process_baker_logic()
+	# we want to check again for the bottom most non-destination card
+	var card: Card = card_above
+	while card and card.card_data.card_type == CardData.CardType.DESTINATION:
+		card = card.card_above
+	var cards_to_process: Array[Card] = []
+	while card:
+		if card.card_data.card_type == CardData.CardType.INGREDIENT:
+			cards_to_process.push_back(card)
+			ingredients_in[card.card_data.ingredient_type] = ingredients_in.get(card.card_data.ingredient_type, 0) + 1
+		card = card.card_above
+	print(cards_to_process)
+	var ingredient_and_cards_used: Array = RecipeManager.process_ingredients2(cards_to_process)
+	var new_card: Card = create_ingredient_card(ingredient_and_cards_used[0])
+	#var new_card: Card = create_ingredient_card(RecipeManager.process_ingredients(ingredients_in))
 	new_card.global_position = global_position
 	var target_position = global_position + Vector2(0.0, 196.0).rotated(randf() * TAU)
 	# hard coded image half sizes
 	target_position.x = clampf(target_position.x, 64.0, get_viewport().get_visible_rect().size.x - 64.0)
 	target_position.y = clampf(target_position.y, 96.0, get_viewport().get_visible_rect().size.y - 96.0)
-	create_tween().tween_property(new_card, "global_position", target_position, 0.5).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	# autostack if courier card on top of the baker card
+	var auto_stack_card: Card = null
+	if card_below:
+		if card_below.card_data.card_type == CardData.CardType.COURIER:
+			auto_stack_card = card_below
+	if auto_stack_card:
+		var child_cards: Array[Card] = auto_stack_card.get_child_cards()
+		if child_cards:
+			if child_cards.size() + 1 >= MAX_AUTO_STACK_SIZE:
+				baker_progress_bar_tween.kill()
+				$BakerProgressBar.hide()
+				return
+		Card.join(get_bottom_card(), new_card)
+	else:
+		new_card.global_position = target_position
 	get_parent().add_child(new_card)
-	new_card.animation.play_spawn_animation()
-	for card: Card in cards_above:
-		card.queue_free()
+	new_card.animation.play_spawn_animation(global_position)
+	var cards_to_delete: Array[Card] = cards_to_process.slice(0, ingredient_and_cards_used[1])
+	for card_to_delete: Card in cards_to_delete:
+		card_to_delete.queue_free()
 
 
 func baker_create_ingredient(_loop_count: int) -> void:
