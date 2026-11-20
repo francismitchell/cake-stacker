@@ -19,6 +19,7 @@ func _ready() -> void:
 	SignalBus.source_card_purchased.connect(_on_source_card_purchased)
 	SignalBus.baker_card_purchased.connect(_on_baker_card_purchased)
 	SignalBus.courier_pair_purchased.connect(_on_courier_pair_purchased)
+	SignalBus.cake_stand_card_purchased.connect(_on_cake_stand_card_purchased)
 	SignalBus.card_sold.connect(_on_card_sold)
 	run_tutorial()
 
@@ -55,6 +56,15 @@ func _on_courier_pair_purchased(from_global_position: Vector2) -> void:
 	$Shop.hide()
 
 
+func _on_cake_stand_card_purchased(from_global_position: Vector2) -> void:
+	var new_card: Card = Card.create_cake_stand_card()
+	new_card.global_position = from_global_position
+	var target_position = from_global_position + Vector2(0.0, 196.0).rotated(randf() * TAU)
+	create_tween().tween_property(new_card, "global_position", target_position, 0.5).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	$Cards.add_child(new_card)
+	$Shop.hide()
+
+
 func _on_card_sold(card_data: CardData) -> void:
 	var sell_amount: int = 0
 	if card_data is IngredientData:
@@ -64,8 +74,8 @@ func _on_card_sold(card_data: CardData) -> void:
 
 
 func run_tutorial() -> void:
-	#$Cards/ShopCard.hide()
-	#$Cards/SellCard.hide()
+	$Cards/ShopCard.hide()
+	$Cards/SellCard.hide()
 	$MarginContainer/MoneyLabel.hide()
 	# spawn in a baker card and a flour source card
 	var baker: Card = Card.create_baker_card()
