@@ -50,6 +50,7 @@ var _card_below: Card = null
 var baker_progress_bar_tween: Tween = null
 var cards_in_auto_stack_area: Array[Card] = []
 var on_shop_layer: bool = false
+var _selling: Card = null
 
 signal card_processed
 signal card_released
@@ -86,6 +87,16 @@ func detach() -> void:
 	reassign_z_indices()
 	old_upper.card_below_changed.emit(null)
 	card_above_changed.emit(null)
+
+
+func remove_from_stack() -> void:
+	var above: Card = _card_above
+	var below: Card = _card_below
+	# break links up and down
+	if below: below.detach()
+	detach()
+	if above and below:
+		Card.join(above, below)
 
 
 static func create_baker_card() -> Card:
@@ -129,6 +140,8 @@ func _ready() -> void:
 			if card_below: card_below.detach())
 	card_above_changed.connect(_on_card_above_changed)
 	card_below_changed.connect(_on_card_below_changed)
+	$BakerProgressBar.visibility_changed.connect(func():
+		$BakerProgressBar.z_index = get_bottom_card().z_index + 1)
 	if not Engine.is_editor_hint():
 		SignalBus.shop_visibility_changed.connect(_on_shop_visibility_changed)
 	if card_data and card_data.card_type == CardData.CardType.BAKER:
@@ -137,7 +150,12 @@ func _ready() -> void:
 
 func _exit_tree() -> void:
 	# make sure to detach cards when selling/deleting cards so that we don't have broken references
-	detach()
+	# remove references to above/below cards for cards in middle of stack
+	# these will be in the deletion queue (references to this card still exist)
+	if is_queued_for_deletion():
+		remove_from_stack()
+	else:
+		detach()
 
 
 func _on_shop_visibility_changed(open: bool) -> void:
@@ -147,30 +165,64 @@ func _on_shop_visibility_changed(open: bool) -> void:
 
 
 func _on_card_above_changed(_card: Card) -> void:
+	if card_data.card_type != CardData.CardType.BAKER: return
 	if card_above:
 		if card_data.card_type == CardData.CardType.BAKER:
 			process_baker_logic()
+	else:
+		if baker_progress_bar_tween: baker_progress_bar_tween.kill()
+		$BakerProgressBar.hide()
 
 
 func _on_card_below_changed(_card: Card) -> void:
-	if card_below:
-		# handle sell logic
-		# selling should only get rid of the card at the top of the stack, not the whole stack
-		if card_data.card_type == CardData.CardType.SELL:
-			if SignalBus.shop_open: return
-			if card_below.card_data.card_type == CardData.CardType.BAKER \
-				and get_tree().get_nodes_in_group("bakers").size() <= 1: return
-			var two_below: Card = card_below.card_below
-			$BakerProgressBar.show()
-			baker_progress_bar_tween = create_tween()
-			baker_progress_bar_tween.tween_property($BakerProgressBar, "value", 100.0, SELL_TIME).from(0.0)
-			baker_progress_bar_tween.finished.connect(card_below.queue_free)
-			baker_progress_bar_tween.finished.connect($BakerProgressBar.hide)
-			baker_progress_bar_tween.finished.connect(func():
-				if card_below: card_below.detach()
-				if two_below:
-					Card.join(self, two_below))
-			baker_progress_bar_tween.finished.connect(SignalBus.card_sold.emit.bind(card_below.card_data))
+	if card_data.card_type != CardData.CardType.SELL: return
+	# cancel if the card being sold has been moved from the bin/sell card
+	if _selling and (not is_instance_valid(_selling) or _selling not in get_child_cards()):
+		_cancel_sale()
+	_start_sale()
+
+
+# iterate through cards stacked on top of the bin until a non-destination card is found
+func _get_sellable_card() -> Card:
+	var card: Card = card_below
+	while card and card.card_data.card_type == CardData.CardType.DESTINATION:
+		card = card.card_below
+	return card
+
+
+# logic for testing sell conditions and starting visual response
+func _start_sale() -> void:
+	var sellable: Card = _get_sellable_card()
+	if sellable == null: return
+	if sellable.card_data.card_type == CardData.CardType.BAKER \
+			and get_tree().get_nodes_in_group("bakers").size() <= 1: return
+	_selling = sellable
+	$BakerProgressBar.show()
+	baker_progress_bar_tween = create_tween()
+	baker_progress_bar_tween.tween_property($BakerProgressBar, "value", 100.0, SELL_TIME).from(0.0)
+	baker_progress_bar_tween.finished.connect(_finish_sale.bind(sellable))
+
+
+# logic for closing off the sale and restarting the cycle on the next card
+func _finish_sale(sold: Card) -> void:
+	_selling = null
+	$BakerProgressBar.hide()
+	# guard in case card somehow became invalid while tween was running
+	if not is_instance_valid(sold) or sold.is_queued_for_deletion(): return
+	var sold_card_data: CardData = sold.card_data
+	# reattach the bin/sell card to whatever is beneath the sold card
+	sold.remove_from_stack()
+	sold.queue_free()
+	SignalBus.card_sold.emit(sold_card_data)
+	# restart process on next card
+	_start_sale()
+
+
+# kill tween and update flag
+func _cancel_sale() -> void:
+	_selling = null
+	if baker_progress_bar_tween: baker_progress_bar_tween.kill()
+	$BakerProgressBar.hide()
 
 
 func initialise_card_visuals() -> void:
