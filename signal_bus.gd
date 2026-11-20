@@ -4,6 +4,7 @@ signal open_shop_card_processed
 signal source_card_purchased(ingredient_type: IngredientData.IngredientType, purchase_position: Vector2)
 signal baker_card_purchased(purchase_position: Vector2)
 signal courier_pair_purchased(purchase_position: Vector2)
+signal cake_stand_card_purchased(purchase_position: Vector2)
 signal card_sold(card_data: CardData)
 signal shop_visibility_changed(open: bool)
 

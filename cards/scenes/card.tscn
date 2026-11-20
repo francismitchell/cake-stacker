@@ -82,7 +82,6 @@ label_settings = SubResource("LabelSettings_f61jr")
 
 [node name="BakerProgressBar" type="ProgressBar" parent="." unique_id=1771479529]
 visible = false
-z_index = 1500
 offset_left = -64.0
 offset_top = 96.0
 offset_right = 64.0

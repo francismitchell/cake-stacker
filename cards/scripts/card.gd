@@ -56,6 +56,7 @@ signal card_processed
 signal card_released
 signal card_above_changed
 signal card_below_changed
+signal z_index_changed
 
 
 # ALWAYS use this to join cards
@@ -127,6 +128,14 @@ static func create_source_card(ingredient_type: IngredientData.IngredientType) -
 static func create_courier_pair() -> Node2D:
 	var new_courier_pair: Node2D = load(COURIER_PAIR_SCENE_PATH).instantiate()
 	return new_courier_pair
+
+
+static func create_cake_stand_card() -> Card:
+	var new_cake_stand_card: Card = load(CARD_SCENE_PATH).instantiate()
+	var cake_stand_card_data: CardData = CardData.new()
+	cake_stand_card_data.card_type = CardData.CardType.CAKE_STAND
+	new_cake_stand_card.card_data = cake_stand_card_data
+	return new_cake_stand_card
 
 
 # Called when the node enters the scene tree for the first time.
@@ -256,6 +265,12 @@ func initialise_card_visuals() -> void:
 	elif card_data.card_type == CardData.CardType.BUY_COURIER_PAIR:
 		card_texture.texture = preload("res://cards/images/missing_tex.png")
 		draggable = false
+	elif card_data.card_type == CardData.CardType.BUY_CAKE_STAND:
+		card_texture.texture = preload("res://cards/images/missing_tex.png")
+		draggable = false
+	elif card_data.card_type == CardData.CardType.CAKE_STAND:
+		card_texture.texture = preload("res://cards/images/missing_tex.png")
+		processable = false
 	# important to ensure that viewport renders this frame
 	$SubViewport.render_target_update_mode = SubViewport.UPDATE_ONCE
 
@@ -359,7 +374,8 @@ func place_at(new_global_position: Vector2, animate: bool) -> void:
 func _is_shop_layer() -> bool:
 	return on_shop_layer or card_data.card_type == CardData.CardType.BUY_INGREDIENT_SOURCE \
 		or card_data.card_type == CardData.CardType.BUY_BAKER_CARD \
-		or card_data.card_type == CardData.CardType.BUY_COURIER_PAIR
+		or card_data.card_type == CardData.CardType.BUY_COURIER_PAIR \
+		or card_data.card_type == CardData.CardType.BUY_CAKE_STAND
 
 
 func is_hidden_under_shop() -> bool:
@@ -374,6 +390,7 @@ func reassign_z_indices() -> void:
 	while card:
 		lifted = lifted or card.is_dragging
 		card.z_index = z_index_base + i + (DRAGGING_Z_INDEX if lifted else 0)
+		card.z_index_changed.emit()
 		card = card.card_below
 		i += 1
 
@@ -419,7 +436,8 @@ func process_baker_logic() -> void:
 	elif card_above.card_data.card_type == CardData.CardType.DESTINATION:
 		# ignore destination cards and start processing the next ingredient card below them
 		var card: Card = card_above
-		while card and card.card_data.card_type == CardData.CardType.DESTINATION:
+		while card and (card.card_data.card_type == CardData.CardType.DESTINATION \
+			or card.card_data.card_type == CardData.CardType.CAKE_STAND):
 			card = card.card_above
 		if not card: return
 		# start cooking
@@ -451,6 +469,13 @@ func process_baker_logic() -> void:
 		baker_progress_bar_tween.tween_property($BakerProgressBar, "value", 100.0, SHOP_OPEN_TIME).from(0.0)
 		baker_progress_bar_tween.finished.connect(SignalBus.courier_pair_purchased.emit.bind(global_position))
 		baker_progress_bar_tween.finished.connect($BakerProgressBar.hide)
+	elif card_above.card_data.card_type == CardData.CardType.BUY_CAKE_STAND:
+		# start buying card
+		$BakerProgressBar.show()
+		baker_progress_bar_tween = create_tween()
+		baker_progress_bar_tween.tween_property($BakerProgressBar, "value", 100.0, SHOP_OPEN_TIME).from(0.0)
+		baker_progress_bar_tween.finished.connect(SignalBus.cake_stand_card_purchased.emit.bind(global_position))
+		baker_progress_bar_tween.finished.connect($BakerProgressBar.hide)
 
 
 func baker_process_ingredients() -> void:
@@ -458,7 +483,8 @@ func baker_process_ingredients() -> void:
 	# because the stack composition might have changed since the initial check in process_baker_logic()
 	# we want to check again for the bottom most non-destination card
 	var card: Card = card_above
-	while card and card.card_data.card_type == CardData.CardType.DESTINATION:
+	while card and (card.card_data.card_type == CardData.CardType.DESTINATION \
+			or card.card_data.card_type == CardData.CardType.CAKE_STAND):
 		card = card.card_above
 	var cards_to_process: Array[Card] = []
 	while card:
@@ -466,7 +492,6 @@ func baker_process_ingredients() -> void:
 			cards_to_process.push_back(card)
 			ingredients_in[card.card_data.ingredient_type] = ingredients_in.get(card.card_data.ingredient_type, 0) + 1
 		card = card.card_above
-	print(cards_to_process)
 	var ingredient_and_cards_used: Array = RecipeManager.process_ingredients2(cards_to_process)
 	var new_card: Card = create_ingredient_card(ingredient_and_cards_used[0])
 	#var new_card: Card = create_ingredient_card(RecipeManager.process_ingredients(ingredients_in))
@@ -539,7 +564,8 @@ func get_auto_stack_card(card: Card) -> Card:
 		# reject cards not at the bottom of the stack
 		if auto_stack_card.card_above != null: continue
 		# reject bottom of stack cards being dragged
-		if auto_stack_card.is_dragging: continue
+		# NOT SURE WHETHER IT IS BETTER WITH OR WITHOUT THIS CHECK
+		#if auto_stack_card.is_dragging: continue
 		# reject bottom of stack cards of different ingredient types
 		if auto_stack_card.card_data.ingredient_type != card.card_data.ingredient_type: continue
 		var child_cards: Array[Card] = auto_stack_card.get_child_cards()
