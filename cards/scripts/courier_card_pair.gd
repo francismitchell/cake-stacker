@@ -2,8 +2,12 @@ extends Node2D
 
 @onready var courier_card: Card = $CourierCard
 @onready var destination_card: Card = $DestinationCard
-@export var line_colour: Color = Color.WHITE
-@export var line_width: float = 4.0
+@export var line_colour: Color = Color(0.284, 0.876, 0.98, 0.376)
+@export var line_width: float = 6.0
+var segment_fill: float = 0.7
+var segment_length: float = 48.0
+var line_start_offset: float
+var end_circle_radius: float = 12.0
 
 var _courier_card_position: Vector2 = Vector2.ZERO
 var _destination_card_position: Vector2 = Vector2.ZERO
@@ -62,13 +66,33 @@ func _move_to_destination() -> void:
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
+	line_start_offset = fmod(Engine.get_physics_frames(), segment_length)
 	if courier_card == null or destination_card == null: return
-	if courier_card.global_position != _courier_card_position:
-		_courier_card_position = courier_card.global_position - global_position
-		queue_redraw()
-	if destination_card.global_position != _destination_card_position:
-		_destination_card_position = destination_card.global_position - global_position
-		queue_redraw()
+	if courier_card.global_position + courier_card.animation.sprite.offset - global_position != _courier_card_position:
+		_courier_card_position = courier_card.global_position + courier_card.animation.sprite.offset - global_position
+	if destination_card.global_position + destination_card.animation.sprite.offset - global_position != _destination_card_position:
+		_destination_card_position = destination_card.global_position + destination_card.animation.sprite.offset - global_position
+	queue_redraw()
 
 func _draw() -> void:
-	draw_line(_courier_card_position, _destination_card_position, line_colour, line_width)
+	# draw start and end circles
+	draw_circle(_courier_card_position, end_circle_radius, line_colour)
+	draw_circle(_destination_card_position, end_circle_radius, line_colour)
+	var distance_along_line: float = 0
+	var distance: float = _courier_card_position.distance_to(_destination_card_position)
+	# line starts at edge of first circle and ends at edge of other circle
+	var start_position: Vector2 = _courier_card_position.move_toward(_destination_card_position, end_circle_radius)
+	var end_position: Vector2 = _destination_card_position.move_toward(_courier_card_position, end_circle_radius)
+	while distance_along_line < distance:
+		# draw the offset first segment
+		if distance_along_line == 0:
+			var gap_length: float = segment_length * (1.0 - segment_fill)
+			# draw a line segment if the offset is larger than the gap length
+			if line_start_offset - gap_length > 0:
+				draw_line(start_position, start_position.move_toward(end_position, line_start_offset - gap_length), line_colour, line_width)
+			distance_along_line = line_start_offset
+		draw_line(start_position.move_toward(end_position, line_start_offset), start_position.move_toward(end_position, segment_length * segment_fill + line_start_offset), line_colour, line_width)
+		# skip a whole segment length to create dash
+		distance_along_line = move_toward(distance_along_line, distance, segment_length)
+		# update next starting position
+		start_position = start_position.move_toward(end_position, segment_length)
