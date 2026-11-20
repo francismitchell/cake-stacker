@@ -257,6 +257,8 @@ func initialise_card_visuals() -> void:
 			card_quality_texture.texture = IngredientData.ingredient_quality_texture_dict[card_data.ingredient_quality]
 		elif card_data.card_type == CardData.CardType.INGREDIENT_SOURCE:
 			card_texture.texture = IngredientData.ingredient_source_texture_dict[card_data.ingredient_type]
+		elif card_data.card_type == CardData.CardType.BUY_INGREDIENT_SOURCE:
+			card_texture.texture = IngredientData.ingredient_source_texture_dict[card_data.ingredient_type]
 	if card_data.card_type == CardData.CardType.BAKER:
 		card_label.text = "Baker"
 		card_texture.texture = preload("res://cards/images/baker.jpg")
