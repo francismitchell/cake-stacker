@@ -313,14 +313,19 @@ func _drop() -> void:
 	if SignalBus.shop_open and not SignalBus.is_point_in_shop_panel(global_position): SignalBus.open_shop_card_processed.emit()
 	# check if dropped on a card or stack
 	if not cards_in_area.is_empty():
-		# find first card with nothing below it
+		# find the closest card to this card's center
+		var closest_card: Card = null
 		for card: Card in cards_in_area:
 			if card.card_below == null and card.is_visible_in_tree() and card not in get_child_cards() and not card.is_hidden_under_shop():
-				Card.join(card, self)
-				break
-			# if dropped onto card that is already above it, reset position of this card and its children
-			elif card.card_below == self:
-				break
+				if not closest_card: closest_card = card
+				elif card.global_position.distance_to(global_position) < closest_card.global_position.distance_to(global_position):
+					closest_card = card
+			# NOTE leave this check commented out for now. can't remember why i initially added it but it may have been important. will see in testing
+			## if dropped onto card that is already above it, reset position of this card and its children
+			#elif card.card_below == self:
+				#break
+		if closest_card:
+			Card.join(closest_card, self)
 		# remove this card from above card if above card not one of the cards in dropped area
 		if card_above:
 			if card_above not in cards_in_area:
