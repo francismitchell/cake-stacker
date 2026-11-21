@@ -76,12 +76,12 @@ const ingredient_texture_dict: Dictionary[IngredientType, Texture2D] = {
 	IngredientType.EGG: preload("res://cards/images/egg.jpg"),
 	IngredientType.FLOUR: preload("res://cards/images/flour.jpg"),
 	IngredientType.STRAWBERRY: preload("res://cards/images/strawberry.jpg"),
-	IngredientType.JAM: preload("res://cards/images/jam.jpg"), ###########
+	IngredientType.JAM: preload("res://cards/images/jam.jpg"),
 	IngredientType.BASIC_SPONGE: preload("res://cards/images/cooked sponge.jpg"),
 	IngredientType.VICTORIA_SPONGE: preload("res://cards/images/missing_tex.png"), ###########
 	IngredientType.BUTTERCREAM: preload("res://cards/images/buttercream.jpg"),
-	IngredientType.GENOISE: preload("res://cards/images/missing_tex.png"), ###########
-	IngredientType.SWISS_ROLL: preload("res://cards/images/missing_tex.png"), ###########
+	IngredientType.GENOISE: preload("res://cards/images/sheet_cake.jpg"),
+	IngredientType.SWISS_ROLL: preload("res://cards/images/swiss_roll.jpg"),
 	IngredientType.COCOA_POWDER: preload("res://cards/images/cocoa.jpg"),
 	IngredientType.CARROT: preload("res://cards/images/carrot.jpg"),
 	IngredientType.CREAM_CHEESE: preload("res://cards/images/cream_cheese_icing.jpg"),
@@ -89,9 +89,9 @@ const ingredient_texture_dict: Dictionary[IngredientType, Texture2D] = {
 	IngredientType.CARROT_SPONGE: preload("res://cards/images/carrot_sponge.jpg"),
 	IngredientType.CARROT_CAKE: preload("res://cards/images/carrot_cake.jpg"),
 	IngredientType.DOUBLE_CARROT_SPONGE: preload("res://cards/images/double_carrot_sponge.jpg"),
-	IngredientType.CHOCOLATE_SPONGE: preload("res://cards/images/chocolate_sponge.jpg"), ###########
+	IngredientType.CHOCOLATE_SPONGE: preload("res://cards/images/chocolate_sponge.jpg"),
 	IngredientType.CHOCOLATE_BUTTERCREAM: preload("res://cards/images/chocolate_buttercream.jpg"),
-	IngredientType.CHOCOLATE_CAKE: preload("res://cards/images/chocolate_cake.jpg"), ###########
+	IngredientType.CHOCOLATE_CAKE: preload("res://cards/images/chocolate_cake.jpg"),
 	IngredientType.VANILLA_CAKE: preload("res://cards/images/cake.jpg"),
 	IngredientType.DOUBLE_CHOCOLATE_SPONGE: preload("res://cards/images/double_chocolate_sponge.jpg")
 }

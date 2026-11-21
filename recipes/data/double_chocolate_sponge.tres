@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="RecipeData" format=3 uid="uid://cvoo1eoincf6m"]
+
+[ext_resource type="Script" uid="uid://5ttmt1e44ldb" path="res://recipes/scripts/recipe_data.gd" id="1_sw26h"]
+
+[resource]
+script = ExtResource("1_sw26h")
+ingredients_in = Dictionary[int, int]({
+21: 2
+})
+ingredient_out = 25
+metadata/_custom_type_script = "uid://5ttmt1e44ldb"
