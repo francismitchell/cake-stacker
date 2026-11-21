@@ -3,8 +3,6 @@
 [ext_resource type="Script" uid="uid://ve301y1mwtcr" path="res://main.gd" id="1_0xm2m"]
 [ext_resource type="PackedScene" uid="uid://bc3fqoc4p5pxw" path="res://cards/scenes/card.tscn" id="1_ig7tw"]
 [ext_resource type="Script" uid="uid://csbqe0bi83708" path="res://cards/scripts/ingredient_data.gd" id="3_h2yge"]
-[ext_resource type="Script" uid="uid://8yc6urmskxx0" path="res://cards/scripts/card_data.gd" id="4_7mycd"]
-[ext_resource type="PackedScene" uid="uid://shu78f7f8os0" path="res://cards/scenes/courier_card_pair.tscn" id="4_lquwl"]
 [ext_resource type="PackedScene" uid="uid://bx4u2cw1eei6b" path="res://ui/shop.tscn" id="6_7mycd"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_1bvp3"]
@@ -21,16 +19,6 @@ metadata/_custom_type_script = "uid://csbqe0bi83708"
 script = ExtResource("3_h2yge")
 card_type = 4
 metadata/_custom_type_script = "uid://csbqe0bi83708"
-
-[sub_resource type="Resource" id="Resource_7mycd"]
-script = ExtResource("3_h2yge")
-ingredient_type = 13
-metadata/_custom_type_script = "uid://csbqe0bi83708"
-
-[sub_resource type="Resource" id="Resource_272bh"]
-script = ExtResource("4_7mycd")
-card_type = 0
-metadata/_custom_type_script = "uid://8yc6urmskxx0"
 
 [node name="Main" type="ColorRect" unique_id=242468426]
 anchors_preset = 15
@@ -59,9 +47,13 @@ size_flags_vertical = 0
 text = "£999"
 label_settings = SubResource("LabelSettings_1bvp3")
 
+[node name="Shop" parent="." unique_id=497939941 instance=ExtResource("6_7mycd")]
+visible = false
+layout_mode = 1
+
 [node name="Cards" type="Node2D" parent="." unique_id=1719419547]
 
-[node name="ShopCard" parent="Cards" unique_id=484967368 instance=ExtResource("1_ig7tw")]
+[node name="ShopCard" parent="Cards" unique_id=190213502 instance=ExtResource("1_ig7tw")]
 position = Vector2(124, 123)
 card_data = SubResource("Resource_1bvp3")
 
@@ -69,46 +61,8 @@ card_data = SubResource("Resource_1bvp3")
 position = Vector2(288, 123)
 card_data = SubResource("Resource_lquwl")
 
-[node name="Card" parent="Cards" unique_id=285781960 instance=ExtResource("1_ig7tw")]
-position = Vector2(290, 629)
-card_data = SubResource("Resource_7mycd")
-
-[node name="Card2" parent="Cards" unique_id=1098544164 instance=ExtResource("1_ig7tw")]
-position = Vector2(289, 398)
-card_data = SubResource("Resource_272bh")
-
 [node name="Couriers" type="Node2D" parent="." unique_id=282794598]
-visible = false
-
-[node name="CourierCardPair" parent="Couriers" unique_id=430443973 instance=ExtResource("4_lquwl")]
-position = Vector2(756, 298)
-
-[node name="CourierCardPair2" parent="Couriers" unique_id=1749924350 instance=ExtResource("4_lquwl")]
-position = Vector2(1217, 412)
-
-[node name="Shop" parent="." unique_id=497939941 instance=ExtResource("6_7mycd")]
-visible = false
-z_index = 1
-layout_mode = 1
-
-[node name="Card" parent="Shop/MarginContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/Butter" parent_id_path=PackedInt32Array(497939941, 136446151) index="0" unique_id=484967368]
-z_index = 501
-processable = false
-
-[node name="Card" parent="Shop/MarginContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/Strawberry" parent_id_path=PackedInt32Array(497939941, 964418862) index="0" unique_id=1324911956]
-z_index = 501
-processable = false
-
-[node name="Card" parent="Shop/MarginContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/Cocoa" parent_id_path=PackedInt32Array(497939941, 789040014) index="0" unique_id=530948243]
-z_index = 501
-processable = false
-
-[node name="Card" parent="Shop/MarginContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/Carrot" parent_id_path=PackedInt32Array(497939941, 915727077) index="0" unique_id=887246111]
-z_index = 501
-processable = false
-
-[node name="Card" parent="Shop/MarginContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/CreamCheese" parent_id_path=PackedInt32Array(497939941, 1308060415) index="0" unique_id=1246261061]
-z_index = 501
-processable = false
 
 [editable path="Shop"]
+[editable path="Shop/MarginContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer2/ShopItem5"]
+[editable path="Shop/MarginContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer2/ShopItem5/CardControl/CourierCardPair2"]

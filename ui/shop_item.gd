@@ -19,6 +19,31 @@ var item_price:
 		item_price = value
 		if is_node_ready():
 			$Label.text = str("£", item_price)
+@export var locked: bool = false:
+	set(value):
+		locked = value
+		if not is_node_ready(): return
+		if locked: _lock_card() 
+		else: _unlock_card()
+
+
+
+func _lock_card() -> void:
+	$Label.text = "???"
+	if card_type == CardData.CardType.BUY_COURIER_PAIR:
+		var courier_pair: CourierPair = card_control.get_node("CourierCardPair")
+		courier_pair.courier_card.card_texture.texture = load("res://cards/images/missing_tex.png")
+		courier_pair.destination_card.card_texture.texture = load("res://cards/images/missing_tex.png")
+	else:
+		var card: Card = card_control.get_node("Card")
+		card.card_texture.texture = load("res://cards/images/missing_tex.png")
+
+func _unlock_card() -> void:
+	$Label.text = str("£", item_price)
+	if card_type == CardData.CardType.BUY_COURIER_PAIR: return
+	var card: Card = card_control.get_node("Card")
+	card.initialise_card_visuals()
+
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -44,3 +69,5 @@ func _update_item() -> void:
 		card.card_data.ingredient_type = ingredient_type
 	card.position = CARD_POSITION
 	card_control.add_child(card)
+	if locked: _lock_card()
+	else: _unlock_card()
