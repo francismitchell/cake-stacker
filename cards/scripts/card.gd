@@ -282,6 +282,7 @@ func initialise_card_visuals() -> void:
 		card_texture.texture = preload("res://cards/images/missing_tex.png")
 		draggable = false
 	elif card_data.card_type == CardData.CardType.BUY_CAKE_STAND:
+		card_label.text = "Cake Stand"
 		card_texture.texture = preload("res://cards/images/missing_tex.png")
 		draggable = false
 	elif card_data.card_type == CardData.CardType.CAKE_STAND:
